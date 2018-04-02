@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">Gestion de Pedidos</div>
+                <div class="panel-heading"><h2>Gestion de Pedidos</h2></div>
 
                 <div class="panel-body">
                     <!--Panel-->
@@ -71,11 +71,49 @@
                                 
                                 
                                     @if($orden->entregado === 'no')
-                                    <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-danger" href="#" role="button" onclick="event.preventDefault(); document.getElementById('deleteOrden{{ $orden->id }}').submit();">Eliminar orden</a></li>
+                                    <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-danger" href="#" role="button" onclick="event.preventDefault(); document.getElementById('deleteOrden{{ $orden->id }}').submit();">Eliminar orden</a> 
+                                        <button class="btn btn-success btn-xs" data-toggle="modal" data-target="#t{{ $orden->id }}">Ver Ticker</button></li>
                                         <form id="deleteOrden{{$orden->id}}" action="ordenes/{{$orden->id}}" method="POST" style="display: none;">
                                             {{ csrf_field() }} {{ method_field('DELETE') }}
                                         </form>
                                     @endif
+                                    
+                                    <!--Modals-->
+                                    
+                                    <div class="modal fade" id="t{{ $orden->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                        <div class="modal-dialog" role="document">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                              <h2 class="modal-title" id="myModalLabel">Ticket de Servicio {{$orden->id}}</h2>
+                                            </div>
+                                            <div class="modal-body">
+                                                @php
+                                                
+                                                    $decode = json_decode($orden->codigo, true);
+                                                    foreach($decode as $code){
+                                                    
+                                                        foreach($planes as $plan){
+                                                        
+                                                            if($code['principal'] == $plan[0]->id){ echo"<h3> Principal: ".$plan[0]->nombre."</h3>";}
+                                                            if($code['contorno'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+                                                            
+                                                        }
+ 
+                                                    }
+                                                
+                                                @endphp
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    
+                                    
+                                    <!--Modals-->
                                     
                                 @endforeach
 
