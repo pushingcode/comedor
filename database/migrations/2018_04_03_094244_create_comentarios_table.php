@@ -4,32 +4,31 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateOrdenesTable extends Migration
+class CreateComentariosTable extends Migration
 {
     /**
      * Run the migrations.
-     * $table->json('codigo');
-     * $table->LONGTEXT('codigo');
+     *
      * @return void
      */
     public function up()
     {
-        Schema::create('ordenes', function (Blueprint $table) {
+        Schema::create('comentarios', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('codigo');
             $table->integer('user_id')->unsigned();
-            $table->integer('menu_id')->unsigned();
-            $table->enum('entregado', ['si', 'no']);
+            $table->integer('empresa_id')->unsigned();
+            $table->text('comentario');
+            $table->enum('activo', ['si', 'no']);
             $table->timestamps();
         });
 
-        Schema::table('ordenes', function ($table) {
+        Schema::table('comentarios', function ($table) {
             $table->softDeletes();
         });
 
-        Schema::table('ordenes', function($table) {
+        Schema::table('comentarios', function($table) {
+            $table->foreign('empresa_id')->references('id')->on('empresa');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('menu_id')->references('id')->on('menus');
         });
     }
 
@@ -40,6 +39,6 @@ class CreateOrdenesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ordenes');
+        Schema::dropIfExists('comentarios');
     }
 }

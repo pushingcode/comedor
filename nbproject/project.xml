@@ -7,8 +7,10 @@
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
             <word>endf</word>
+            <word>Enviar</word>
             <word>foreach</word>
             <word>php</word>
+            <word>phpforeach</word>
         </spellchecker-wordlist>
     </configuration>
 </project>

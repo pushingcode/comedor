@@ -290,6 +290,14 @@
                                 <li>Nombre de menu: {{ $menu->nombre }} Activo: {{ $menu->activo }} </li>
                             @endforeach
                         </ul>
+                    <br>
+                    <h3>Comentarios</h3>
+                    <hr>
+                        <ul>
+                            @foreach($comentarios as $comentario)
+                                <li>Comentario: {{ $comentario->comentario }} De: {{ $comentario->userNombre }} Empresa; {{$comentario->empresaNombre}} </li>
+                            @endforeach
+                        </ul>
                     @endif
                     
                 </div>

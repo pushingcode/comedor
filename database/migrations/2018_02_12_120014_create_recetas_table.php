@@ -19,7 +19,7 @@ class CreateRecetasTable extends Migration
             $table->increments('id');
             $table->string('nombre');
             $table->enum('tipo', ['principal', 'contorno', 'bebida']);
-            $table->LONGTEXT('receta');
+            $table->text('receta');
             $table->integer('user_id')->unsigned();
             $table->timestamps();
         });

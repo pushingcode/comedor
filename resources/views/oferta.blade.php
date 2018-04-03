@@ -56,6 +56,44 @@
                     {{-- si el usuario no esta activo no leemos los menus disponibles --}}
                     
                         @if($cliente->activo === 'si')
+                        <!--boton de sugerencias y comentarios-->
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#comentarios">
+                          Dejanos un Comentario o sugerencia
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="comentarios" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">En que podemos Mejorar!!!</h4>
+                              </div>
+                              <div class="modal-body">
+                                  <form id="enviarComentario" action="comentarios" method="POST">
+                                      {{csrf_field()}}
+                                      <div class="form-group">
+                                          <label class="col-md-4 control-label">Deja tu Comentario:</label>
+                                          <div class="col-md-6">
+                                              <textarea name="comentario" class="form-control"></textarea>
+                                          </div>
+                                      </div>
+                                      <br>
+                                      <br>
+                                      <br>
+                                  </form>                                  
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                                <button onclick="event.preventDefault(); document.getElementById('enviarComentario').submit();" type="button" class="btn btn-primary">Enviar</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <!--boton de comentarios y sugerencias-->
                         
                         {{-- crear las consultas en el controlador [Ordenes,menu] --}}
                         

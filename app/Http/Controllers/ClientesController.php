@@ -234,7 +234,7 @@ class ClientesController extends Controller
         $permiso = 'editar cliente';
         
         if (!$user->can($permiso)) {
-            return Redirect::back()->withErrors('Este usuario no posee permisos para '. $permiso);
+            return \Redirect::back()->withErrors('Este usuario no posee permisos para '. $permiso);
         }
         
         \DB::table('clientes')
@@ -372,7 +372,7 @@ class ClientesController extends Controller
        
         
         if (!$user->can('editar cliente')) {
-            return Redirect::back()->withErrors('Este usuario no posee roles para editar clientes');
+            return \Redirect::back()->withErrors('Este usuario no posee roles para editar clientes');
         }
         
         $users = \DB::table('clientes')
@@ -389,10 +389,35 @@ class ClientesController extends Controller
         
     //dd($users);
         if(count($users) == 0){
-            return Redirect::back()->withErrors('El recurso solicitado no existe');
+            return \Redirect::back()->withErrors('El recurso solicitado no existe');
         } else {
             return redirect()->action('ClientesController@edit', ['id' => $users[0]->userId]);
         }
         
+    }
+    
+    public function comentario(Request $request) {
+        $user = \Auth::user();
+        $empresa = \DB::table('clientes')->where('user_id',$user->id)->get();
+        //dd($empresa);
+        $validator = \Validator::make($request->all(), [
+            'comentario' => 'required|max:1000',
+        ]);
+        
+        if ($validator->fails()) {
+            return \Redirect::back()
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+        $timer = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
+        \DB::table('comentarios')->insert([
+            'user_id'       => $user->id,
+            'empresa_id'    =>$empresa[0]->empresa_id,
+            'comentario'    =>$request->comentario,
+            'activo'        =>'si',
+            'created_at'    => $timer,
+            'updated_at'    => $timer
+        ]);
+        return \Redirect::back()->withErrors('tu comentario fue enviado');
     }
 }

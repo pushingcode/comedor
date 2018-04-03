@@ -18,7 +18,7 @@ class CreateMenusTable extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nombre');
-            $table->LONGTEXT('plan');
+            $table->text('plan');
             $table->string('codigo');
             $table->enum('activo', ['si', 'no']);
             $table->enum('seccion', ['comedor', 'delivery', 'vip']);

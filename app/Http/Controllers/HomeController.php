@@ -44,6 +44,14 @@ class HomeController extends Controller
                                         'clientes.cargo AS userCargo')
                                 ->where('clientes.deleted_at', '=', null)
                                 ->get();
+                $comentarios    = \DB::table('comentarios')
+                                    ->join('users','comentarios.user_id','=','users.id')
+                                    ->join('empresa','comentarios.empresa_id','=','empresa.id')
+                                    ->select('comentarios.*',
+                                            'users.name AS userNombre',
+                                            'empresa.nombre AS empresaNombre')
+                                    ->where('comentarios.deleted_at','=',null)
+                                    ->get();
 
                 $return = view('home',[
                         'recetas'       => $recetas,
@@ -52,6 +60,7 @@ class HomeController extends Controller
                         'menus'         => $menus,
                         'empresas'      => $empresas,
                         'users'         => $users,
+                        'comentarios'   => $comentarios,
                         ]);
             }
 
