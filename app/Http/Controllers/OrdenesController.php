@@ -372,9 +372,10 @@ class OrdenesController extends Controller
                     ->where('ordenes.user_id',$cliente->user_id)
                     ->whereBetween('ordenes.created_at', [$fromDate, $toDate])
                     ->get();
+            if(count($orden) == 0){}else{$ordenes[] = $orden;}
             
-            $ordenes[] = $orden;
         }
+        
         
         foreach($ordenes as $orden){
             if(count($orden)==0){return \Redirect::back()->withErrors('No existen datos para el rango de fechas '. $fromDate.' - '. $toDate);}
