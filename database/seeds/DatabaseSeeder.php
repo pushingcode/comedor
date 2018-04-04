@@ -43,9 +43,9 @@ class UsersTableSeeder extends Seeder
         
         $users =[
         'usuario1' => array(
-                'user'      => 'Carlos Guillen',
-                'email'     => 'cristalmedia@gmail.com',
-                'password'  => bcrypt('969lala$')
+                'user'      => 'User Admin',
+                'email'     => 'code_dev@zoho.com',
+                'password'  => bcrypt('123456')
                 ),
         'usuario2' => array(
                 'user'      => 'Carlos Martinez',
