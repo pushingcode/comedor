@@ -312,7 +312,7 @@ class OrdenesController extends Controller
 //                $start['Semana: '.$j]= array_merge($a,$b,$c);
                 $start['Semana: '.$j]= array_merge($a,$b);
 
-                $i+=7;
+                $i+=5;
                 $j++; 
             }
 
