@@ -370,4 +370,42 @@ class PlanController extends Controller
     {
         //
     }
+    
+    /**
+     * $id Id de plan para obtener rangos de fecha acordes con las planificaciones
+     * ejecutadas
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * TestCases 
+     */
+    public function planreporte($id) {
+        //cargamos planes a partir de un rango de fecha viable de planes ejecutados
+        $plan = \DB::table('plan')->where(null)->get();
+        //testcase
+        $meses = array('enero'=>1, 'febrero'=>2, 'marzo'=>3, 'abril'=>4);
+        $year = Carbon\Carbon::now()->year;
+        //$month = Carbon\Carbon::now()->month;
+        //dd($month);
+        $salida = array();
+        foreach($meses as $mes=>$month){
+            $date = Carbon\Carbon::createFromDate($year,$month);
+            $daysPerWeeks = Carbon\Carbon::DAYS_PER_WEEK;
+            $numberOfWeeks = floor($date->daysInMonth / $daysPerWeeks);
+            $start = [];
+            $j=1;
+            for ($i=1; $i <= $date->daysInMonth ; $i++) {
+                Carbon\Carbon::createFromDate($year,$month,$i); 
+                $a = (array)Carbon\Carbon::createFromDate($year,$month,$i)->startOfWeek()->toDateString();
+                $b = (array)Carbon\Carbon::createFromDate($year,$month,$i)->endOfweek()->toDateString();
+                $start['Semana: '.$j]= array_merge($a,$b);
+
+                $i+=7;
+                $j++; 
+            }
+        $salida[$mes] = $start;
+        }
+        
+        return $salida;
+        
+    }
 }
