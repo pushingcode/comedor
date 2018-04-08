@@ -286,6 +286,7 @@ class OrdenesController extends Controller
     {
         $selsectEmpresa = \App\Empresa::all();
         $idJS = array();
+        $result = array();
         foreach($selsectEmpresa as $value){
             $idJS[$value->id] = $value->nombre;
             //para cada empresa se setea el ambito de reporte a partir de su

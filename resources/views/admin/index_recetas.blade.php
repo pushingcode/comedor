@@ -16,7 +16,7 @@
 							<th>Nombre</th>
 							<th>Tipo</th>
 							<th>Fecha</th>
-                                                        <th>Accion <a href="recetas/create" class="btn btn-success btn-xs">+ Receta</a></th>
+                            <th>Accion <a data-toggle="tooltip" data-placement="top" title="Crear nueva receta" href="recetas/create" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> Receta</a></th>
 						</thead>
 						<tbody>
 						@foreach($recetas as $key => $values)
@@ -29,15 +29,15 @@
 							<td>{{ $key[3] }}</td>
 							<td>
 								@can('crear produccion')
-									<a href="/produccion/producir_receta/{{ $key[1] }}"> Producir</a>&nbsp;
+									<a data-toggle="tooltip" data-placement="top" title="Cargar Produccion" class="btn btn-success" href="/produccion/producir_receta/{{ $key[1] }}"><i class="fa fa-cogs" aria-hidden="true"></i></a>
 								@endcan
 								@can('editar receta')
-									<a href="/recetas/{{ $key[1] }}/edit">Editar</a>&nbsp;
+									<a data-toggle="tooltip" data-placement="top" title="Editar Receta" class="btn btn-info" href="/recetas/{{ $key[1] }}/edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
 								@endcan 
 								@can('eliminar receta')
-									<a href="#" onclick="event.preventDefault(); document.getElementById('delform{{ $key[1] }}').submit();">
-                                        Eliminar
-                                    </a>&nbsp;
+									<a data-toggle="tooltip" data-placement="top" title="Eliminar Recetas" class="btn btn-danger" href="#" onclick="event.preventDefault(); document.getElementById('delform{{ $key[1] }}').submit();">
+									<i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
 
                                         <form id="delform{{ $key[1] }}" action="/recetas/{{ $key[1] }}" method="POST" style="display: none;">
                                             {{ csrf_field() }}
