@@ -31,6 +31,9 @@ Route::post('semanal/empresas','OrdenesController@freporte');
 Route::post('semanal/cargar/reporte/{id}','OrdenesController@reporte');
 Route::post('comentarios', 'ClientesController@comentario');
 
+//testCases
+Route::get('reporte', 'PlanController@planreporte');
+
 
 Route::resources([
 	'recetas'	 	=> 'RecetaController',

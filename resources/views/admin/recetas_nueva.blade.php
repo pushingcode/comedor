@@ -7,28 +7,38 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><h2>Crear Nueva {{ $mensaje }}</h2></div>
                 	<div class="panel-body">
-						<form class="form-inline" action="/recetas" method="POST">
-						<div class="form-group">
+						<form class="form-horizontal" action="/recetas" method="POST">
 						{{ csrf_field() }}
 
-							<label for="nombre">Nombre de la receta: </label><br>
-							<input type="text" name="nombre">
-							<br><br>
-							<label for="tipo">Tipo de producto: </label><br>
-							<select name="tipo" id="">
-								<option value="principal">Principal</option>
-								<option value="contorno">Contorno</option>
-							</select>
-							<br><br>
-							<label for="producto">Seleccione su producto: </label><br> 
-							<select id="add_field" name="producto">
-									<option value="0">Selecione</option>
-								@foreach($materia_primas as $materia_prima)
+						<div class="form-group">
+							<label for="nombre" class="col-sm-2 control-label">Receta: </label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" name="nombre">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="tipo" class="col-sm-2 control-label">Tipo:</label>
+							<div class="col-sm-10">
+								<select class="form-control" name="tipo" id="tipo" >
+									<option value="principal">Principal</option>
+									<option value="contorno">Contorno</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="producto" class="col-sm-2 control-label">Producto: </label>
+							<div class="col-sm-10">
+								<select class="form-control" id="add_field" name="producto">
+										<option value="0">Selecione</option>
+									@foreach($materia_primas as $materia_prima)
 
-									<option data-valor="Calorias: {{ $materia_prima->calorias }} Proteinas: {{ $materia_prima->proteinas }} Grasas: {{ $materia_prima->grasas }} Carbohidratos: {{ $materia_prima->carbohidratos }}" value="{{ $materia_prima->id }}">{{ $materia_prima->producto }}</option>
+										<option data-valor="Calorias: {{ $materia_prima->calorias }} Proteinas: {{ $materia_prima->proteinas }} Grasas: {{ $materia_prima->grasas }} Carbohidratos: {{ $materia_prima->carbohidratos }}" value="{{ $materia_prima->id }}">{{ $materia_prima->producto }}</option>
 
-								@endforeach
-							</select>
+									@endforeach
+								</select>
+							</div>
+						</div>
+							
 
 							<hr>
 
@@ -36,10 +46,8 @@
 
 							<hr>
 							<small>Cantidad maxima de 30 items</small>
-							<br>
-
-							<input type="submit" value="Crear receta">
-						</div>
+							<br><input class="form-control" type="submit" value="Crear receta">
+							
 						</form>
 						
 						<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
@@ -60,7 +68,7 @@
 						        } else {
 						        	if(x < max_fields){ //cuenta de input's
 							            x++; //text box increment
-							            $(wrapper).append('<div><br><label for="id-' + val_input + '">' + opt_input + ': </label><br> ' + info_input + '<br> <input id="id-' + val_input + '" type="text" name="' + val_input + '"/><a href="#" class="remove_field">Remover</a></div>'); //add input box
+							            $(wrapper).append('<div class="form-group"><label class="col-sm-3 control-label" for="id-' + val_input + '">' + opt_input + ':</label><div class="col-sm-8"><input class="form-control" id="id-' + val_input + '" type="text" name="' + val_input + '"/></div><a href="#" class="remove_field btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></a><div class="col-md-6 col-md-offset-3"> <small>' + info_input + '</small> </div></div>'); //add input box
 							        }
 						        }
 						    });

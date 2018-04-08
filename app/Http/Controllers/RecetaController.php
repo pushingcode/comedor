@@ -25,7 +25,7 @@ class RecetaController extends Controller
     {
         //carga de recetas activas existentes
 
-        $recetas = DB::table('recetas')
+        $recetas = \DB::table('recetas')
             ->where('deleted_at','=',null)
             ->get();
 
@@ -95,7 +95,7 @@ class RecetaController extends Controller
         $user = \App\User::find($id_user);
 
         if (!$user->can('crear receta')) {
-            return Redirect::back()->withErrors('Este usuario no posee roles para crear recetas');
+            return \Redirect::back()->withErrors('Este usuario no posee roles para crear recetas');
         }
         //
         /**
@@ -144,7 +144,7 @@ class RecetaController extends Controller
 
         //contando la cantidad de entrada del arreglo productos
         if(count($productos) == 0) {
-            return Redirect::back()->withErrors('Las cantidades no satisfacen las condiciones');
+            return \Redirect::back()->withErrors('Las cantidades no satisfacen las condiciones');
         } 
 
         $messages = [
@@ -152,7 +152,7 @@ class RecetaController extends Controller
             'max'      => 'El campo :attribute supera el maximo permitido'
         ];
 
-        $validator = Validator::make($request->all(), [
+        $validator = \Validator::make($request->all(), [
             'nombre' => 'required|max:100',
         ], $messages);
 
@@ -254,7 +254,7 @@ class RecetaController extends Controller
         $user = \App\User::find($id_user);
 
         if (!$user->can('editar receta')) {
-            return Redirect::back()->withErrors('Este usuario no posee roles para editar recetas');
+            return \Redirect::back()->withErrors('Este usuario no posee roles para editar recetas');
         }
 
         //cortando el arreglo $request->all()
@@ -269,7 +269,7 @@ class RecetaController extends Controller
             'max'      => 'El campo :attribute supera el maximo permitido'
         ];
 
-        $validator = Validator::make($request->all(), [
+        $validator = \Validator::make($request->all(), [
             'nombre' => 'required|max:100',
         ], $messages);
 
@@ -333,7 +333,7 @@ class RecetaController extends Controller
         $user = \App\User::find($id_user);
 
         if (!$user->can('eliminar receta')) {
-            return Redirect::back()->withErrors('Este usuario no posee roles para eliminar recetas');
+            return \Redirect::back()->withErrors('Este usuario no posee roles para eliminar recetas');
         }
         Log::info('El usuario ' . $user->name . " utilizo el metodo SoftDelete sobre la receta ID: " .$id);
         $receta = \App\Receta::find($id);
