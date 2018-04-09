@@ -255,20 +255,22 @@ class OrdenesController extends Controller
                         'empresa.nombre AS empresasNombre',
                         'empresa.activo AS empresasActivo',
                         'ordenes.*')
-                ->where([['menu_id','=',$id],['entregado','=','no']])
+                ->where([['menu_id','=',$id],['entregado','=','no'],['ordenes.deleted_at','=',null]])
                 ->get();
-        
+
         foreach($orden as $value){
             $decode[] = json_decode($value->codigo, true);
             foreach($decode as $receta){
-                //dd($receta[0]['principal']);
                 $cargaPlatoP = \DB::table('recetas')
                         ->where('id',$receta[0]['principal'])
                         ->get();
-                $cargaPlatoC = \DB::table('recetas')
-                        ->where('id',$receta[0]['contorno'])
+                $cargaPlatoC1 = \DB::table('recetas')
+                        ->where('id',$receta[0]['contorno1'])
                         ->get();
-                $payload[$value->id] = "Empresa: ".$value->empresasNombre."-Usuario: ".$value->userName."-Principal: ".$cargaPlatoP[0]->nombre."-Contorno: ".$cargaPlatoC[0]->nombre;
+                $cargaPlatoC2 = \DB::table('recetas')
+                        ->where('id',$receta[0]['contorno2'])
+                        ->get();
+                $payload[$value->id] = "Empresa: ".$value->empresasNombre."-Usuario: ".$value->userName."-Principal: ".$cargaPlatoP[0]->nombre."-Contorno: ".$cargaPlatoC1[0]->nombre."-Contorno: ".$cargaPlatoC2[0]->nombre;
             }
                 
         }
