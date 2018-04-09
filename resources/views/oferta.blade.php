@@ -2,6 +2,7 @@
 
 @section('content')
 @php
+    $bloackForm = false;
     $OrdenId = 0;
     $menuServidos = array();
 @endphp
@@ -56,6 +57,7 @@
                     {{-- si el usuario no esta activo no leemos los menus disponibles --}}
                     
                         @if($cliente->activo === 'si')
+                        @php $bloackForm = true; @endphp
                         <!--boton de sugerencias y comentarios-->
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#comentarios">
@@ -109,6 +111,9 @@
                                 
                                 
                                     @if($orden->entregado === 'no')
+                                    @php
+                                    $bloackForm = false;
+                                    @endphp
                                     <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-danger" href="#" role="button" onclick="event.preventDefault(); document.getElementById('deleteOrden{{ $orden->id }}').submit();">Eliminar orden</a> 
                                         <button class="btn btn-success btn-xs" data-toggle="modal" data-target="#t{{ $orden->id }}">Ver Ticker</button></li>
                                         <form id="deleteOrden{{$orden->id}}" action="ordenes/{{$orden->id}}" method="POST" style="display: none;">
@@ -134,7 +139,11 @@
                                                         foreach($planes as $plan){
                                                         
                                                             if($code['principal'] == $plan[0]->id){ echo"<h3> Principal: ".$plan[0]->nombre."</h3>";}
-                                                            if($code['contorno'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+                                                            if($code['contorno1'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+                                                            if($code['contorno2'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+                                                            //if($code['contorno3'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+                                                            //if($code['contorno4'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+
                                                             
                                                         }
  
@@ -211,11 +220,7 @@
                             <!--Form Pedido-->
                         
                                 <form class="form-inline" action="ordenes" method="POST">
-                                    <fieldset
-                                        @foreach($menus as $menu)
-                                                {{ $menu->id === $OrdenId ? 'disabled' : '' }}{{ $cliente->activo === 'si' ? '' : 'disabled' }}
-                                        @endforeach
-                                        >
+                                    <fieldset {{ $bloackForm === true ? '' : 'disabled' }} >
                                     {{ csrf_field() }}
                                     <input type="hidden" name="menu" value="{{$menus[0]->id}}">
                                 <!-- menus principales-->
@@ -274,48 +279,79 @@
                                   <h3 class="panel-title">Contornos disponibles</h3>
                                 </div>
                                 <div class="panel-body">
-                                  @foreach($menus as $menu)
-                                            @foreach($planes as $plan)
-                                            @if($menu->idPlanes === $plan[0]->idProduccion)
-
-                                             @if($plan[0]->tipo === "contorno")
-                                                <!-- principales -->
-                                                  <div class="col-md-4">
-
-                                                      <div class="panel panel-info">
-
-                                                          <div class="panel-heading">
-                                                                <h3 class="panel-title">{{$plan[0]->nombre}}</h3>
-                                                          </div>
-                                                              <div class="panel-body">
-                                                                  <div class="form-group">
-                                                                      <label for="contorno">Seleccionar:</label>
-                                                                      <input type="radio" name="contorno" value="{{$plan[0]->id}}">
-                                                                  </div>
-                                                                      <button type="button" 
-                                                                              class="btn btn-xs btn-success" 
-                                                                              data-html="true" 
-                                                                              data-placement="top"
-                                                                              data-toggle="popover" 
-                                                                              title="{{$plan[0]->nombre}}" 
-                                                                              data-content="
-                                                                                @php
-                                                                                    $receta = json_decode($plan[0]->receta, true);
-                                                                                @endphp
-                                                                                    @foreach($receta as $values)
-                                                                                        @foreach($values as $value)
-                                                                                        <strong>{{$value['nombre']}}</strong> Cantidad: {{$value['cantidad']}}gr.<br>
-                                                                                        <small>Proteinas {{$value['proteinas']}}<br>Grasas: {{$value['grasas']}}<br>Carbohidratos: {{$value['carbohidratos']}}<br>Calorias: {{$value['calorias']}}<br></small>
-                                                                                        @endforeach
-                                                                                    @endforeach
-                                                                              ">Info. Nutricional</button>
-                                                              </div>
-                                                      </div>  
-                                                  </div>
+                                <select class="form-control" id="add_field">
+                                <option>Seleccione uno o mas Contornos</option>
+                                @foreach($menus as $menu)
+                                    @foreach($planes as $plan)
+                                        @if($menu->idPlanes === $plan[0]->idProduccion)
+                                            @if($plan[0]->tipo === "contorno")
+                                            <option  data-valor="
+                                                                @php
+                                                                    $receta = json_decode($plan[0]->receta, true);
+                                                                @endphp
+                                                                    @foreach($receta as $values)
+                                                                        @foreach($values as $value)
+                                                                        <strong>{{$value['nombre']}}</strong> Cantidad: {{$value['cantidad']}}gr.<br><small>Proteinas {{$value['proteinas']}}<br>Grasas: {{$value['grasas']}}<br>Carbohidratos: {{$value['carbohidratos']}}<br>Calorias: {{$value['calorias']}}<br></small>
+                                                                        @endforeach
+                                                                    @endforeach
+                                                                " value="{{$plan[0]->id}}">
+                                                {{$plan[0]->nombre}}
+                                            </option>
                                             @endif
                                         @endif
                                     @endforeach
                                 @endforeach
+                                </select>
+                                <hr>
+                                <div id="txtboxToFilter" class="input_fields_wrap"></div>
+                                <!--jquery-->
+                                <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+                                <script>
+                                $(document).ready(function() {
+                                    var max_fields      = 2; //max input permitidos
+                                    var wrapper         = $(".input_fields_wrap"); //clase wrapper para input's
+                                    var add_button      = $("#add_field"); //Select ID
+                                
+                                    var x = 0; //init cd input disponibles
+                                    $(add_button).change(function(e){ //On.Change value disparo nuevo input
+                                    var val_input		= $("#add_field").val();
+                                    var opt_input		= $("#add_field option:selected").text();
+                                    var info_input		= $("#add_field option:selected").data().valor;
+                                        e.preventDefault();
+                                        if (val_input == 0) {
+                                            return;
+                                        } else {
+                                            if(x < max_fields){ //cuenta de input's
+                                                x++; //text box increment
+                                                $(wrapper).append('<div class="form-group"><div class="col-sm-8"><input class="form-control" id="id-' + val_input + '" type="hidden" name="contorno' + x + '" value="' + val_input + '"/></div> <button type="button" class="btn btn-success" data-html="true" data-placement="top" data-toggle="popover" title="' + opt_input + '" data-content="' + info_input + '">' + opt_input + '</button> <a href="#" class="remove_field btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></a><div class="col-md-6 col-md-offset-3"></div></div>'); //add input box
+                                            }
+                                        }
+                                    });
+                                
+                                    $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+                                        e.preventDefault(); $(this).parent('div').remove(); x--;
+                                    });
+
+                                    $("#txtboxToFilter").keydown(function (e) {
+                                        // Allow: backspace, delete, tab, escape, enter and .
+                                        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+                                            // Allow: Ctrl+A, Command+A
+                                            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) || 
+                                            // Allow: home, end, left, right, down, up
+                                            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                                                // let it happen, don't do anything
+                                                return;
+                                        }
+                                        // Ensure that it is a number and stop the keypress
+                                        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                                            e.preventDefault();
+                                        }
+                                    });
+
+                                });
+                                    
+                                </script>
+                                <!--jquery-->
                                 </div>
                               </div>
                                  <button type="submit" class="btn btn-primary">Crear Orden</button>

@@ -141,7 +141,7 @@ class OrdenesController extends Controller
         //dd($request->all());
         //[{"principal":$request->principal,"controno":$request->contorno}]
         //$codigo = $request->principal.'+'.$request->contorno;
-        $codigo[] = ["principal"=>$request->principal,"contorno"=>$request->contorno];
+        $codigo[] = ["principal"=>$request->principal,"contorno1"=>$request->contorno1,"contorno2"=>$request->contorno2];
         
         //dd(json_encode($codigo));
         $id = \Auth::id();
