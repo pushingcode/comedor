@@ -23,6 +23,7 @@ class CreateMenusTable extends Migration
             $table->enum('activo', ['si', 'no']);
             $table->enum('seccion', ['comedor', 'delivery', 'vip']);
             $table->integer('user_id')->unsigned();
+            $table->dateTime('publicar');
             $table->timestamps();
         });
         Schema::table('menus', function($table) {
