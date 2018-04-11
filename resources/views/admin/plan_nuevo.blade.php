@@ -117,9 +117,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="menu_name">Fecha de publicacion: </label>
+                                <label class="col-md-4 control-label" for="publicar">Fecha de publicacion: </label>
                                 <div class="col-md-6">
-                                    <input class="form-control" type="text" name="menu_name"> - <input class="form-control" type="text" name="menu_name"> - <input class="form-control" type="text" name="menu_name">
+                                    <input class="date form-control" type="text" name="publicar">
                                 </div>
                             </div>
                                                         
@@ -127,9 +127,9 @@
 
 								<input type="hidden" name="produccion" value='
 								@php 
-                                                                    foreach ($productos as $producto){
-                                                                        echo $producto->id.",";
-                                                                    }				
+                                    foreach ($productos as $producto){
+                                        echo $producto->id.",";
+                                    }				
 								@endphp
 								'>
 								
@@ -143,4 +143,14 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+
+    $('.date').datepicker({  
+
+       format: 'dd-mm-yyyy',
+       autoclose: true
+
+     });  
+
+</script>
 @endsection
