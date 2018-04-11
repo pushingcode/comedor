@@ -91,31 +91,37 @@
 
                                                 <p>Enviar todos los productos existentes a planificacion y crear el menu del dia</p>
 							<div class="form-group">
-                                                            <label class="col-md-4 control-label" for="menu_name">Nombre del Menu: </label>
-                                                            <div class="col-md-6">
-                                                                <input class="form-control" type="text" name="menu_name">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                           <label class="col-md-4 control-label" for="servicios">Tipo de servicio: </label>
-                                                           <div class="col-md-6">
-                                                                <select class="form-control" name="servicios" id="servicios">
-									<option value="desayuno">Desayuno</option>
-									<option value="almuerzo">Almuerzo</option>
-									<option value="cena">Cena</option>
-								</select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                           <label class="col-md-4 control-label" for="servicios">Seccion de Servicio:</label>
-                                                           <div class="col-md-6">
-                                                                <select class="form-control" name="seccion" id="seccion">
-									<option value="comedor">Comedor</option>
-									<option value="delivery">Delivery</option>
-									<option value="vip">Vip</option>
-								</select>
-                                                            </div>
-                                                        </div>
+                                <label class="col-md-4 control-label" for="menu_name">Nombre del Menu: </label>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="menu_name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="servicios">Tipo de servicio: </label>
+                                <div class="col-md-6">
+                                    <select class="form-control" name="servicios" id="servicios">
+                                        <option value="desayuno">Desayuno</option>
+                                        <option value="almuerzo">Almuerzo</option>
+                                        <option value="cena">Cena</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="servicios">Seccion de Servicio:</label>
+                                <div class="col-md-6">
+                                    <select class="form-control" name="seccion" id="seccion">
+                                        <option value="comedor">Comedor</option>
+                                        <option value="delivery">Delivery</option>
+                                        <option value="vip">Vip</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="menu_name">Fecha de publicacion: </label>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="menu_name"> - <input class="form-control" type="text" name="menu_name"> - <input class="form-control" type="text" name="menu_name">
+                                </div>
+                            </div>
                                                         
 							
 

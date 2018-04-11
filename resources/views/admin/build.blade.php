@@ -24,29 +24,54 @@
 							<form action="/produccion" method="POST">
 							{{ csrf_field() }}
 							<input type="hidden" name="receta" value="{{ $key[1] }}">
-								<p>Batch de Produccion: <input id="batch" type="text" name="batch" value='1'></p>
+								<p>Batch de Produccion: <input id="batch" type="text" name="batch" value='1'> (Porciones o Raciones)</p>
+								<p><small>La produccion va en funcion de inventarios existentes</small></p>
 						<hr>
 							@php
 								$x = 0;
 								for ($i = 1; $i <= count($values); $i++) {
 								    $clave = "producto" . $i;
-								    echo"<p>". $values[$x][$clave]["nombre"] ." Cantidad: <input placeholder=gramos type='text' name='".$values[$x][$clave]["id"]."' value='" . $values[$x][$clave]["cantidad"] . "'><br>";
+								    echo"<p>". $values[$x][$clave]["nombre"] ." Cantidad Gr: <input placeholder=gramos type='text' name='".$values[$x][$clave]["id"]."' value='" . $values[$x][$clave]["cantidad"] . "'> (x Porciones o Raciones)<br>";
 									foreach($inventarios as $inventario){
 
 										if($values[$x][$clave]["id"] == $inventario->id) {
 
-											echo "<p>Cantidades Aprox. en invetario: <span id='cantInv-".$values[$x][$clave]["id"]."'>" . $inventario->cantidad . "</span></p>";
-											echo "<p>Cantidades Aprox. despues de cargar el batch: <span class='cantidades'></span>" . ($inventario->cantidad - $values[$x][$clave]["cantidad"]) . "</p>";
+											echo "<p>Cantidades Aprox. en invetario: <span id='cantInv-".$values[$x][$clave]["id"]."'>" . $inventario->cantidad / 1000 . "Kg</span></p>";
+											//echo"<input name='INV-".$values[$x][$clave]["id"]."' type='hidden' value='" . $inventario->cantidad / 1000 . "'>";
+											echo "<p>Cantidades Aprox. despues de cargar el batch: <span class='cantidades' id='total-".$values[$x][$clave]["id"]."'></span></p>";
 
 										}
-									}
+										
+									}@endphp
+											<script>
+											$('input[name=batch]').keyup(function(){
+
+												var sum = parseInt($('input[name= @php echo $values[$x][$clave]["id"]; @endphp]').val(),10)*1000;
+												var cantidad = parseInt($('@php echo"#cantInv-" . $values[$x][$clave]["id"]; @endphp').text(),10);
+												sum *= parseInt($('input[name=batch]').val(),10)/1000000;
+												total = Math.ceil(cantidad - sum);
+												color = 'green';
+												mensaje = '';
+												if(total < 0){
+													color = 'red';
+													mensaje = 'No es posible cargar inventarios negativos';
+												}else if(total <= 0.1 || total <= 1){
+													color = 'orange';
+													mensaje = 'Alerta!! El inventario esta peligrosamente bajo';
+												}
+												$('@php echo"#total-".$values[$x][$clave]["id"]; @endphp').text(total + "Kg " + mensaje).css('color', color);
+												console.log(sum);
+
+											})
+											</script>
+									@php
 									
 								    echo"</p>";
+
 								    $x++;
 								}
 
 							@endphp
-							
 
 						<hr>
 						@endforeach	

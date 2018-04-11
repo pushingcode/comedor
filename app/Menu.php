@@ -16,10 +16,12 @@ class Menu extends Model
     	'plan_id',
     	'activo',
     	'seccion',
-    	'user_id'
+    	'user_id',
+      'publicar'
     ];
 
     protected $dates = [
+      'publicar',
       'created_at',
       'updated_at'
     ];
