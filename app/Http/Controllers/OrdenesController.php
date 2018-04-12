@@ -48,7 +48,8 @@ class OrdenesController extends Controller
                             'planes.codigo AS codigoPlanes',
                             'planes.servicio AS servicioPlan')
                     ->where('menus.activo','=','si')
-                    ->whereBetween('menus.publicar', [$fromDate, $toDate])
+                    //->whereBetween('menus.publicar', [$fromDate, $toDate])
+                    ->whereBetween('menus.created_at', [$fromDate, $toDate])
                     ->get();
             //cargando datos para envios a la vista
             //dd($menu);
@@ -387,5 +388,56 @@ class OrdenesController extends Controller
         $recetas = \DB::table('recetas')->get();
         $empresa = \DB::table('empresa')->where('id',$rango[0])->get();
         return view('admin.reportes_consumo',['mensaje'=>'Reporte de Consumo','empresas'=>$empresa,'ordenes'=>$ordenes,'recetas'=>$recetas,'preriodo'=>$rango[1]." AL ".$rango[2]]);
+    }
+
+    public function mreporte(Request $request, $id)
+    {
+        //dd($request->all());
+        $year = Carbon\Carbon::now()->year;
+        $date = Carbon\Carbon::createFromDate($year,$request->mes);
+
+        $rango = array(
+            1     => $date->startofMonth()->toDateString(),
+            2     => $date->endofMonth()->toDateString(),
+            );
+
+        $fromDate   = $rango[1] . ' 00:00:00';
+        $toDate     = $rango[2] . ' 23:59:59';
+
+        $ordenes = array();
+        
+        $clientes = \DB::table('clientes')
+                ->where('empresa_id',$id)
+                ->get();
+        if(count($clientes) == 0){
+            return \Redirect::back()->withErrors('No existen clientes afiliados a esta empresa');
+        }
+        
+        //verificamos si el cliente tiene pedidos realizados en el rango de fechas
+        foreach($clientes as $cliente){
+            $orden = \DB::table('ordenes')
+                    ->join('users','ordenes.user_id','=','users.id')
+                    ->join('menus','ordenes.menu_id','=','menus.id')
+                    ->select('users.name AS nombreUser',
+                            'menus.nombre AS nombreMenu',
+                            'menus.seccion AS MenuSeccion',
+                            'ordenes.*')
+                    ->where('ordenes.user_id',$cliente->user_id)
+                    ->whereBetween('ordenes.created_at', [$fromDate, $toDate])
+                    ->get();
+            if(count($orden) == 0){}else{$ordenes[] = $orden;}
+            
+        }
+        
+        
+        foreach($ordenes as $orden){
+            if(count($orden)==0){return \Redirect::back()->withErrors('No existen datos para el rango de fechas '. $fromDate.' - '. $toDate);}
+        }
+        
+        $recetas = \DB::table('recetas')->get();
+        $empresa = \DB::table('empresa')->where('id',$id)->get();
+        return view('admin.reportes_consumo',['mensaje'=>'Reporte de Consumo','empresas'=>$empresa,'ordenes'=>$ordenes,'recetas'=>$recetas,'preriodo'=>$rango[1]." AL ".$rango[2]]);
+
+        
     }
 }

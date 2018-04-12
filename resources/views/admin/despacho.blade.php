@@ -47,8 +47,9 @@
                     echo "<h3>".$data[0]."</h3>";
                     echo "<h4>".$data[1]."</h4>";
                     echo "<hr>";
-                    echo "<p>".$data[2]."</p>";
-                    echo "<p>".$data[3]."</p>";
+                    echo "<h3>".$data[2]."</h3>";
+                    echo "<h3>".$data[3]."</h3>";
+                    echo "<h3>".$data[4]."</h3>";
                   @endphp
                   
                 </div>

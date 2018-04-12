@@ -123,7 +123,8 @@ class PlanController extends Controller
 
                 } else {
 
-                    return \Redirect::back()->withErrors('El recurso enviado no es una fecha valida');
+                    //return \Redirect::back()->withErrors('El recurso enviado no es una fecha valida');
+                    $timerF = null;
 
                 }
         }
@@ -204,17 +205,17 @@ class PlanController extends Controller
             $nuevoMenu = \DB::table('menus')
                             ->insert([
                                     'nombre'        => $codigo,
-                                    'plan   '       => json_encode($nuevoPl),
+                                    'plan'          => json_encode($nuevoPl),
                                     'codigo'        => $codigo,
                                     'activo'        => 'no',
                                     'seccion'       => $request->seccion,
                                     'user_id'       => $user_id,
-                                    'publicar'      => null,
+                                    'publicar'      => $timerF,
                                     'created_at'    => $timer,
                                     'updated_at'    => $timer,
                                 ]);
             
-            return back();
+            return \Redirect::back()->withErrors('Nueva Planificacion Creada disponible para Menu');
 
         } else {
              
