@@ -48,7 +48,7 @@ class OrdenesController extends Controller
                             'planes.codigo AS codigoPlanes',
                             'planes.servicio AS servicioPlan')
                     ->where('menus.activo','=','si')
-                    ->whereBetween('menus.created_at', [$fromDate, $toDate])
+                    ->whereBetween('menus.publicar', [$fromDate, $toDate])
                     ->get();
             //cargando datos para envios a la vista
             //dd($menu);

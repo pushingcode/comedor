@@ -8,18 +8,20 @@
                 <div class="panel-heading"><h2>{{ $mensaje }}</h2> <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span></div>
                 	<div class="panel-body">
                             <!-- Carga de infos menus menuUpdate -->
-                            <table class="table table-striped">
+                            <table class="table table-condensed">
                                 <tr>
                                     <th>Fecha</th>
+                                    <th>Disponible</th>
                                     <th>Activo</th>
                                     <th>Menu</th>
-                                    <th>Por entregar</th>
+                                    <th>Pedidos</th>
                                     <th>Entregados</th>
                                     <th>Operaciones</th>
                                 </tr>
                                 @foreach($menus as $menu)
                                 <tr>
                                     <td>{{$menu->created_at}}</td>
+                                    <td>{{$menu->publicar}}</td>
                                     <td>
                                         @if($menu->activo === 'no')
                                         
@@ -53,7 +55,7 @@
                                         @endphp
                                     </td>
                                     <td>
-                                        <a @if($apagar) disabled @endif class="btn btn-info btn-xs" href="/entrega/menu/{{ $menu->id }}" role="button">Entregar</a>
+                                        <a @if($apagar) disabled @endif class="btn btn-info btn-xs" href="/entrega/menu/{{ $menu->id }}" role="button"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
                                         <a @if($menu->activo === 'no') disabled @endif class="btn btn-danger btn-xs" 
                                            href="" role="button" 
                                            onclick="event.preventDefault();
