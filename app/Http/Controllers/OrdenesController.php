@@ -440,4 +440,60 @@ class OrdenesController extends Controller
 
         
     }
+
+
+    /**
+     * reporte de productos cargados bajo las siguientes condiciones
+     * rango de fechas mensual
+     * ordenes con pedidos completados
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function promreporte(Request $request)
+    {
+        $year = Carbon\Carbon::now()->year;
+        $date = Carbon\Carbon::createFromDate($year,$request->mes);
+
+        $rango = array(
+            1     => $date->startofMonth()->toDateString(),
+            2     => $date->endofMonth()->toDateString(),
+            );
+
+        $fromDate   = $rango[1] . ' 00:00:00';
+        $toDate     = $rango[2] . ' 23:59:59';
+        
+        $orden = \DB::table('ordenes')
+        ->where('ordenes.entregado','si')
+        ->whereBetween('ordenes.created_at', [$fromDate, $toDate])
+        ->get();
+
+        $cantidadOrdenes = count($orden);
+
+        if($cantidadOrdenes == 0){
+            return \Redirect::back()->withErrors('No existen datos para el Reporte');
+        }
+        
+        //contando los platos principales y contortnos
+        foreach($orden as $value){
+            $decode[] = json_decode($value->codigo, true);
+            foreach($decode as $receta){
+                $cargaPlatoP = \DB::table('recetas')
+                        ->where('id',$receta[0]['principal'])
+                        ->get();
+                $cargaPlatoC1 = \DB::table('recetas')
+                        ->where('id',$receta[0]['contorno1'])
+                        ->get();
+                $cargaPlatoC2 = \DB::table('recetas')
+                        ->where('id',$receta[0]['contorno2'])
+                        ->get();
+
+
+                $payload[$value->id] = "-Principal: ".$cargaPlatoP[0]->nombre."-Contorno: ".$cargaPlatoC1[0]->nombre."-Contorno: ".$cargaPlatoC2[0]->nombre;
+            }
+                
+        }
+
+
+    }
 }
