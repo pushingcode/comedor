@@ -450,10 +450,13 @@ class OrdenesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function promreporte(Request $request)
+    public function promreporte()
     {
+        $payLoadDescrTake = array();
+        $payLoadCountTake = array();
         $year = Carbon\Carbon::now()->year;
-        $date = Carbon\Carbon::createFromDate($year,$request->mes);
+        //$date = Carbon\Carbon::createFromDate($year,$request->mes);
+        $date = Carbon\Carbon::createFromDate($year,4);
 
         $rango = array(
             1     => $date->startofMonth()->toDateString(),
@@ -478,21 +481,28 @@ class OrdenesController extends Controller
         foreach($orden as $value){
             $decode[] = json_decode($value->codigo, true);
             foreach($decode as $receta){
-                $cargaPlatoP = \DB::table('recetas')
+
+
+                $cargaPlatoP[] = \DB::table('recetas')
                         ->where('id',$receta[0]['principal'])
                         ->get();
-                $cargaPlatoC1 = \DB::table('recetas')
+
+                $cargaPlatoC1[] = \DB::table('recetas')
                         ->where('id',$receta[0]['contorno1'])
                         ->get();
-                $cargaPlatoC2 = \DB::table('recetas')
+
+                $cargaPlatoC2[] = \DB::table('recetas')
                         ->where('id',$receta[0]['contorno2'])
                         ->get();
 
 
-                $payload[$value->id] = "-Principal: ".$cargaPlatoP[0]->nombre."-Contorno: ".$cargaPlatoC1[0]->nombre."-Contorno: ".$cargaPlatoC2[0]->nombre;
+                //$payLoadDescrTake[$value->id] = $receta[0]['principal']."*Principal: ".$cargaPlatoP[0]->nombre."-".$receta[0]['contorno1']."*Contorno: ".$cargaPlatoC1[0]->nombre."-".$receta[0]['contorno2']."*Contorno: ".$cargaPlatoC2[0]->nombre; 01340341473411034949
             }
-                
+            $payLoadDescrTake[] = [$cargaPlatoP,$cargaPlatoC1,$cargaPlatoC2];
         }
+
+        //return $payLoadCountTake;
+        return $payLoadDescrTake;
 
 
     }
