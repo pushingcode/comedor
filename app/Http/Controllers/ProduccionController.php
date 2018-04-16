@@ -64,10 +64,10 @@ class ProduccionController extends Controller
         $fail = false;
         $flag = array();
         $index = array_slice($request->all(),3,30,true);
-
+        
         if($request->batch == 0){
             
-            return \Redirect::back()->withErrors('Carga completada!!!');
+            return \Redirect::back()->withErrors('No es posible cargar esa cantidad de porciones!!!');
             
         }
 

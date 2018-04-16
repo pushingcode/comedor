@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+$meses = array('enero'=>1, 'febrero'=>2, 'marzo'=>3, 'abril'=>4, 'mayo'=>5, 'junio'=>6, 'julio'=>7, 'agosto'=>8, 'septiembre'=>9, 'octubre'=>10, 'noviembre'=>11, 'diciembre'=>12);
+@endphp
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
@@ -40,9 +43,24 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Seleccione una Semana para {{$v}}</h4>
+              <h4 class="modal-title" id="myModalLabel">Gestion de reportes para {{$v}}</h4>
             </div>
             <div class="modal-body">
+                 <form method="POST" action="/mensual/cargar/reporte/{{$k}}" class="form-inline">
+                      {{ csrf_field() }}
+                    <h4>Reporte Mensual</h4>
+                    <div class="form-group">
+                      <label for="mes">Seleccione un mes</label>
+                      <select name="mes" id="mes" class="form-control">
+                        @foreach($meses as $mesN => $mesT)
+                          <option value="{{$mesT}}" id="">{{$mesN}}</option>
+                        @endforeach
+                       </select>
+                    </div>
+                    <button type="submit" class="btn btn-default">Cargar Reporte</button>
+                 </form>
+                <hr>
+                <h4>Reporte Semanal</h4>
                 <form id="rep-{{$k}}" action="cargar/reporte/{{$k}}" method="post">
                     {{ csrf_field() }}
                     <div class="form-group">
@@ -74,7 +92,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               <button onclick="event.preventDefault();
-                     document.getElementById('rep-{{$k}}').submit();" type="button" class="btn btn-primary">Generar Reporte</button>
+                     document.getElementById('rep-{{$k}}').submit();" type="button" class="btn btn-primary">Cargar Reporte</button>
             </div>
           </div>
         </div>

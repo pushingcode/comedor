@@ -13,7 +13,7 @@ class OrdenesController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +28,7 @@ class OrdenesController extends Controller
                 ->get();
         $ordenes = [];
         $planes = [];
-        $fromDate = date('Y-m-d' . ' 00:00:00', time()); 
+        $fromDate = date('Y-m-d' . ' 00:00:00', time());
         $toDate = date('Y-m-d' . ' 23:59:59', time());
         if(count($cliente) == 0) {
             //el cliente solo es usuario se carga el form de asignacion para empresas
@@ -39,7 +39,7 @@ class OrdenesController extends Controller
             $empresa = \DB::table('empresa')
                     ->where('id',$cliente[0]->empresa_id)
                     ->get();
-            
+
             $menu = \DB::table('menus')
                     ->join('planes','menus.codigo','=','planes.codigo')
                     ->select(
@@ -48,6 +48,7 @@ class OrdenesController extends Controller
                             'planes.codigo AS codigoPlanes',
                             'planes.servicio AS servicioPlan')
                     ->where('menus.activo','=','si')
+                    //->whereBetween('menus.publicar', [$fromDate, $toDate])
                     ->whereBetween('menus.created_at', [$fromDate, $toDate])
                     ->get();
             //cargando datos para envios a la vista
@@ -65,7 +66,7 @@ class OrdenesController extends Controller
                         ->where('produccion.id','=',$menuConsulta->idPlanes)
                         ->get();
             }
-            
+
             $ordenes = \DB::table('ordenes')
                     ->join('menus','ordenes.menu_id','=','menus.id')
                     ->select(
@@ -77,10 +78,10 @@ class OrdenesController extends Controller
                     ->where([['ordenes.user_id','=',$id],['deleted_at','=',null]])
                     ->get();
         }
-        
+
         return  view('oferta',[
-            'clientes'  => $cliente, 
-            'empresas'  => $empresa, 
+            'clientes'  => $cliente,
+            'empresas'  => $empresa,
             'menus'     => $menu,
             'ordenes'   => $ordenes,
             'planes'    => $planes
@@ -112,14 +113,14 @@ class OrdenesController extends Controller
 //        if(!$user->hasPermissionTo('crear pedido')) {
 //            return \Redirect::back()->withErrors('No puedes, generar pedidos');
 //        }
-        
+
         //verificamos si el usuario esta activo como cliente
         $clientes  = \DB::table('clientes')
                 ->join('empresa','clientes.empresa_id','=','empresa.id')
                 ->select('empresa.activo AS empresaActiva',
                         'clientes.activo AS clienteActivo')
                 ->where([
-                        ['clientes.user_id', '=', $user->id], 
+                        ['clientes.user_id', '=', $user->id],
                         ['clientes.activo','=','si']
                         ])
                 ->get();
@@ -127,11 +128,11 @@ class OrdenesController extends Controller
         if(count($clientes) == 0) {
             return \Redirect::back()->withErrors('No eres cliente');
         }
-        
+
         if($clientes[0]->empresaActiva == 'no') {
             return \Redirect::back()->withErrors('Su empresa no esta activa');
         }
-        
+
         if($clientes[0]->clienteActivo == 'no') {
             return \Redirect::back()->withErrors('No estas activo como cliente');
         }
@@ -142,7 +143,7 @@ class OrdenesController extends Controller
         //[{"principal":$request->principal,"controno":$request->contorno}]
         //$codigo = $request->principal.'+'.$request->contorno;
         $codigo[] = ["principal"=>$request->principal,"contorno1"=>$request->contorno1,"contorno2"=>$request->contorno2];
-        
+
         //dd(json_encode($codigo));
         $id = \Auth::id();
         $ordenes = new \App\Ordenes;
@@ -153,7 +154,7 @@ class OrdenesController extends Controller
             $ordenes->entregado = 'no';
 
         $ordenes->save();
-        
+
         return redirect()->action('OrdenesController@index');
     }
 
@@ -197,7 +198,7 @@ class OrdenesController extends Controller
                 \DB::table('ordenes')
                 ->where('id','=', $id)
                 ->update(['entregado' => 'si']);
-                
+
                 $mensaje = 'Orden entregada';
                 break;
             case 1:
@@ -207,7 +208,7 @@ class OrdenesController extends Controller
                 $mensaje = 'No existe el recurso solicirado. Error de interpretacion ';
                 break;
             default :
-                
+
                 break;
         }
         return \Redirect::back()->withErrors($mensaje);
@@ -232,7 +233,7 @@ class OrdenesController extends Controller
         $orden->delete();
         return \Redirect::back()->withErrors('Orden eliminada');
     }
-    
+
     /**
      * carga el form de entrega de orden.
      *
@@ -272,19 +273,19 @@ class OrdenesController extends Controller
                         ->get();
                 $payload[$value->id] = "Empresa: ".$value->empresasNombre."-Usuario: ".$value->userName."-Principal: ".$cargaPlatoP[0]->nombre."-Contorno: ".$cargaPlatoC1[0]->nombre."-Contorno: ".$cargaPlatoC2[0]->nombre;
             }
-                
+
         }
-        
+
         return view('admin.despacho',['mensaje'=>'Gestion de Ordenes','ordenes' => $orden,'payloads' => $payload]);
     }
-    
+
     /**
      * carga el form seleccionar la empresa a generar reporte.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    function creporte() 
+    function creporte()
     {
         $selsectEmpresa = \App\Empresa::all();
         $idJS = array();
@@ -292,7 +293,7 @@ class OrdenesController extends Controller
         foreach($selsectEmpresa as $value){
             $idJS[$value->id] = $value->nombre;
             //para cada empresa se setea el ambito de reporte a partir de su
-            //creacion como marcador base para enviar la fechas minimas y maximas 
+            //creacion como marcador base para enviar la fechas minimas y maximas
             //de semana reportable
 //            $year = Carbon\Carbon::parse($value->created_at)->year;
 //            $month = Carbon\Carbon::parse($value->created_at)->month;
@@ -306,7 +307,7 @@ class OrdenesController extends Controller
 //            $ord = [];
             $j=1;
             for ($i=1; $i <= $date->daysInMonth ; $i++) {
-                Carbon\Carbon::createFromDate($year,$month,$i); 
+                Carbon\Carbon::createFromDate($year,$month,$i);
                 $a = (array)Carbon\Carbon::createFromDate($year,$month,$i)->startOfWeek()->toDateString();
                 $b = (array)Carbon\Carbon::createFromDate($year,$month,$i)->endOfweek()->toDateString();
 //                $c = (array)\DB::table('ordenes')
@@ -316,21 +317,21 @@ class OrdenesController extends Controller
                 $start['Semana: '.$j]= array_merge($a,$b);
 
                 $i+=5;
-                $j++; 
+                $j++;
             }
 
             $result[$value->id."*".$value->rif."*".$value->nombre] = $start;
             //$result['numberOfWeeks'] = ["$numberOfWeeks"];
         }
-        
-        
+
+
         return view('admin.reporte_empresa_select',[
             'mensaje'=>'Reporte Semanal de Ordenes',
             'selsectEmpresa' => $result,
             'idJs' => $idJS,
                 ]);
     }
-    
+
     /**
      * Carga la iformacion de los pedidos por semana de la empresa.
      *
@@ -342,7 +343,7 @@ class OrdenesController extends Controller
         dd($request->empresa);
         //a partir de la empresa cargamos los clientes con ordenes
     }
-    
+
     public function reporte(Request $request, $id)
     {
         //dd($request->all());
@@ -353,16 +354,16 @@ class OrdenesController extends Controller
         //$rango[2] = fecha fin
         $fromDate = $rango[1] . ' 00:00:00';
         $toDate = $rango[2] . ' 23:59:59';
-        
+
         $ordenes = array();
-        
+
         $clientes = \DB::table('clientes')
                 ->where('empresa_id',$rango[0])
                 ->get();
         if(count($clientes) == 0){
             return \Redirect::back()->withErrors('No existen clientes afiliados a esta empresa');
         }
-        
+
         //verificamos si el cliente tiene pedidos realizados en el rango de fechas
         foreach($clientes as $cliente){
             $orden = \DB::table('ordenes')
@@ -376,16 +377,166 @@ class OrdenesController extends Controller
                     ->whereBetween('ordenes.created_at', [$fromDate, $toDate])
                     ->get();
             if(count($orden) == 0){}else{$ordenes[] = $orden;}
-            
+
         }
-        
-        
+
+
         foreach($ordenes as $orden){
             if(count($orden)==0){return \Redirect::back()->withErrors('No existen datos para el rango de fechas '. $fromDate.' - '. $toDate);}
         }
-        
+
         $recetas = \DB::table('recetas')->get();
         $empresa = \DB::table('empresa')->where('id',$rango[0])->get();
         return view('admin.reportes_consumo',['mensaje'=>'Reporte de Consumo','empresas'=>$empresa,'ordenes'=>$ordenes,'recetas'=>$recetas,'preriodo'=>$rango[1]." AL ".$rango[2]]);
+    }
+
+    public function mreporte(Request $request, $id)
+    {
+        //dd($request->all());
+        $year = Carbon\Carbon::now()->year;
+        $date = Carbon\Carbon::createFromDate($year,$request->mes);
+
+        $rango = array(
+            1     => $date->startofMonth()->toDateString(),
+            2     => $date->endofMonth()->toDateString(),
+            );
+
+        $fromDate   = $rango[1] . ' 00:00:00';
+        $toDate     = $rango[2] . ' 23:59:59';
+
+        $ordenes = array();
+
+        $clientes = \DB::table('clientes')
+                ->where('empresa_id',$id)
+                ->get();
+        if(count($clientes) == 0){
+            return \Redirect::back()->withErrors('No existen clientes afiliados a esta empresa');
+        }
+
+        //verificamos si el cliente tiene pedidos realizados en el rango de fechas
+        foreach($clientes as $cliente){
+            $orden = \DB::table('ordenes')
+                    ->join('users','ordenes.user_id','=','users.id')
+                    ->join('menus','ordenes.menu_id','=','menus.id')
+                    ->select('users.name AS nombreUser',
+                            'menus.nombre AS nombreMenu',
+                            'menus.seccion AS MenuSeccion',
+                            'ordenes.*')
+                    ->where('ordenes.user_id',$cliente->user_id)
+                    ->whereBetween('ordenes.created_at', [$fromDate, $toDate])
+                    ->get();
+            if(count($orden) == 0){}else{$ordenes[] = $orden;}
+
+        }
+
+
+        foreach($ordenes as $orden){
+            if(count($orden)==0){return \Redirect::back()->withErrors('No existen datos para el rango de fechas '. $fromDate.' - '. $toDate);}
+        }
+
+        $recetas = \DB::table('recetas')->get();
+        $empresa = \DB::table('empresa')->where('id',$id)->get();
+        return view('admin.reportes_consumo',['mensaje'=>'Reporte de Consumo','empresas'=>$empresa,'ordenes'=>$ordenes,'recetas'=>$recetas,'preriodo'=>$rango[1]." AL ".$rango[2]]);
+
+
+    }
+
+
+    /**
+     * reporte de productos cargados bajo las siguientes condiciones
+     * rango de fechas mensual
+     * ordenes con pedidos completados
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function promreporte(Request $request)
+    {
+        $cantidad = 1;
+        $year = Carbon\Carbon::now()->year;
+        $date = Carbon\Carbon::createFromDate($year,$request->mes);
+
+        $rango = array(
+            1     => $date->startofMonth()->toDateString(),
+            2     => $date->endofMonth()->toDateString(),
+            );
+            
+        $fromDate   = $rango[1] . ' 00:00:00';
+        $toDate     = $rango[2] . ' 23:59:59';
+
+        $orden = \DB::table('ordenes')
+        ->where('ordenes.entregado','=','si')
+        ->where('ordenes.deleted_at','=',null)
+        ->whereBetween('ordenes.created_at', [$fromDate, $toDate])
+        ->get();
+
+        $cantidadOrdenes = count($orden);
+
+        if($cantidadOrdenes == 0){
+            return \Redirect::back()->withErrors('No existen datos para el Reporte');
+        }
+
+        //contando los platos principales y contortnos
+        foreach($orden as $value){
+            $decode[] = json_decode($value->codigo, true);
+            foreach($decode as $receta){
+
+
+                $cargaPlatoP = \DB::table('recetas')
+                        ->where('id',$receta[0]['principal'])
+                        ->get();
+
+                $cargaPlatoC1 = \DB::table('recetas')
+                        ->where('id',$receta[0]['contorno1'])
+                        ->get();
+
+                $cargaPlatoC2 = \DB::table('recetas')
+                        ->where('id',$receta[0]['contorno2'])
+                        ->get();
+
+                $payLoadDescrTakeP[$value->id] = [$cargaPlatoP[0]->nombre => $cantidad];
+                $payLoadDescrTakeC1[$value->id] = [$cargaPlatoC1[0]->nombre => $cantidad];
+                $payLoadDescrTakeC2[$value->id] = [$cargaPlatoC2[0]->nombre => $cantidad];
+            }
+        }
+
+        $sumArrayP = array();
+        foreach ($payLoadDescrTakeP as $key => $value) {
+          foreach ($value as $plato => $cantidad) {
+            if( ! array_key_exists($plato, $sumArrayP)) $sumArrayP[$plato] = 0;
+
+            $sumArrayP[$plato]+=$cantidad;
+          }
+        }
+
+        $sumArrayC1 = array();
+        foreach ($payLoadDescrTakeC1 as $key => $value) {
+          foreach ($value as $plato => $cantidad) {
+            if( ! array_key_exists($plato, $sumArrayC1)) $sumArrayC1[$plato] = 0;
+
+            $sumArrayC1[$plato]+=$cantidad;
+          }
+        }
+
+        $sumArrayC2 = array();
+        foreach ($payLoadDescrTakeC2 as $key => $value) {
+          foreach ($value as $plato => $cantidad) {
+            if( ! array_key_exists($plato, $sumArrayC2)) $sumArrayC2[$plato] = 0;
+
+            $sumArrayC2[$plato]+=$cantidad;
+          }
+        }
+
+        //return $payLoadDescrTake;
+        return view('admin.reporte_venta',[
+          'mensaje'=>'Reporte mensual de pedidos',
+          'payLoadP'=>$sumArrayP,
+          'payLoadC1'=>$sumArrayC1,
+          'payLoadC2'=>$sumArrayC2,
+          'totales'=>$cantidadOrdenes,
+          'periodo'=>$rango[1]." AL ".$rango[2]
+        ]);
+
+
     }
 }

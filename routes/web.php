@@ -13,7 +13,7 @@
 */
 
 /*Route::get('/', function () {
-    return view('auth.login');
+    return view('auth.login');rporpedido
 });
 */
 Route::view('/', 'auth.login');
@@ -29,7 +29,10 @@ Route::post('clientes/registrar', 'ClientesController@registrar')->name('registr
 Route::post('clientes/reedit','ClientesController@reedit');
 Route::post('semanal/empresas','OrdenesController@freporte');
 Route::post('semanal/cargar/reporte/{id}','OrdenesController@reporte');
+Route::post('mensual/cargar/reporte/{id}','OrdenesController@mreporte');
+Route::post('rporpedido','OrdenesController@promreporte');
 Route::post('comentarios', 'ClientesController@comentario');
+Route::get('events', 'EventController@index');
 
 //testCases
 Route::get('reporte', 'PlanController@planreporte');

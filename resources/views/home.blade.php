@@ -21,8 +21,8 @@
                     </p>
 
                     <p>
-                        
-                        
+
+
                         @role('superadmin')
                             <!-- Split button -->
 <!--                            <div class="btn-group">
@@ -62,9 +62,9 @@
                                 <li><a href="#">Ver Lista de Usuarios</a></li>
                               </ul>
                             </div>
-                            
-                            <!--Modal para editar usuarios--> 
-                            
+
+                            <!--Modal para editar usuarios-->
+
                             <div class="modal fade" id="editUsuario" tabindex="-1" role="dialog" aria-labelledby="myeditUsuario">
                               <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -86,21 +86,21 @@
                                                 @endphp
                                             {!! Form::select('usuario', $myUser, null, ['placeholder' => 'seleccione...', 'class' => 'form-control']) !!}
                                             <br>
-                                            
+
                                             </div>
                                       </div>
                                       <div class="form-group">
                                         <button type="submit" class="btn btn-primary form-control">Editar</button>
                                      </div>
                                   </div>
-                                  
+
                                     {!! Form::close() !!}
                                 </div>
                               </div>
                             </div>
-                            
-                            <!--Modal para editar empresas--> 
-                            
+
+                            <!--Modal para editar empresas-->
+
                             <div class="modal fade" id="editEmpresa" tabindex="-1" role="dialog" aria-labelledby="myeditEmpresa">
                               <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -121,23 +121,25 @@
                                                 @endphp
                                             {!! Form::select('empresa', $myEmpresa, null, ['placeholder' => 'seleccione...', 'class' => 'form-control']) !!}
                                             <br>
-                                            
+
                                             </div>
                                       </div>
                                       <div class="form-group">
                                         <button type="submit" class="btn btn-primary form-control">Editar</button>
                                      </div>
                                   </div>
-                                  
+
                                     {!! Form::close() !!}
                                 </div>
                               </div>
                             </div>
-                            
+
                         @endrole
                         @role('superadmin|jefe de cocina')
 
                             <button type="button" class="btn btn-success">Inventario</button>
+
+                            <a href="events" class="btn btn-default"><i class="fa fa-calendar" aria-hidden="true"></i></a>
 
                             <!-- Split button recetas -->
                             <div class="btn-group">
@@ -192,7 +194,7 @@
                                               btnClass: 'btn-blue',
                                               action: function () {
                                                   var value = $('#remove_field').val();
-                                                  
+
                                                   //$.alert('Estas eliminando ');
                                                   $.get('/recetas/sdestroy/' + value, $('#remove_field').serialize(), function(data) {
                                                     $('#REC-' + value).remove();
@@ -247,7 +249,7 @@
                               </button>
                               <ul class="dropdown-menu">
                                 <li><a href="/semanal/empresas">Pedidos x Empresas</a></li>
-<!--                                <li><a href="/semanal/usuarios">Pedidos x Usuarios</a></li>-->
+                                <li><a data-toggle="modal" data-target="#RepMes" href="#">Pedidos Mensuales</a></li>
 <!--                                <li><a href="#"></a></li>-->
 <!--                                <li role="separator" class="divider"></li>
                                 <li><a href="#">Separated link</a></li>-->
@@ -299,10 +301,43 @@
                             @endforeach
                         </ul>
                     @endif
-                    
+
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!--Modal para reportes de plato x mes-->
+@php
+$meses = array('enero'=>1, 'febrero'=>2, 'marzo'=>3, 'abril'=>4, 'mayo'=>5, 'junio'=>6, 'julio'=>7, 'agosto'=>8, 'septiembre'=>9, 'octubre'=>10, 'noviembre'=>11, 'diciembre'=>12);
+@endphp
+<div class="modal fade" id="RepMes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Gestion de Reportes</h4>
+        </div>
+        <div class="modal-body">
+          <form class="" action="rporpedido" method="post">
+            {{ csrf_field() }}
+          <div class="form-group">
+            <label for="mes">Seleccione un mes</label>
+            <select name="mes" id="mes" class="form-control">
+              @foreach($meses as $mesN => $mesT)
+                <option value="{{$mesT}}" id="">{{$mesN}}</option>
+              @endforeach
+             </select>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Consultar</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--Modal para reportes de plato x mes-->
 @endsection

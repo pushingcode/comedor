@@ -21,7 +21,7 @@
                     </p>
                     <!--comprobando parametros empresa no esta registrada en la costenitas-->
                     @if(count($clientes) === 0)
-                    
+
                         <h3>El usuario no tiene asignada empresa</h3>
                         <form class="form-horizontal" action="clientes/rif" method="POST">
                             {{ csrf_field() }}
@@ -48,21 +48,25 @@
                         @endforeach
                         <br>
                         {{-- cargamos info del usuario --}}
-                    
+
                         @foreach($clientes as $cliente)
                             Estado del cliente: @if($cliente->activo == 'si') <span class="label label-success" data-toggle="tooltip" data-placement="right" title="ok">Activo con la empresa {{$empresa->nombre}}</span> @else <span class="label label-warning" data-toggle="tooltip" data-placement="right" title="Contacte al representate de su empresa">Inactivo</span> @endif<br>
                         @endforeach
                         <hr>
-                        
+
                     {{-- si el usuario no esta activo no leemos los menus disponibles --}}
-                    
+
                         @if($cliente->activo === 'si')
                         @php $bloackForm = true; @endphp
                         <!--boton de sugerencias y comentarios-->
                         <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#comentarios">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#comentarios">
                           Dejanos un Comentario o sugerencia
-                        </button>
+                        </button> <a href="events" class="btn btn-default"><i class="fa fa-calendar" aria-hidden="true"></i></a>
+
+                        <hr>
+
+
 
                         <!-- Modal -->
                         <div class="modal fade" id="comentarios" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -84,7 +88,7 @@
                                       <br>
                                       <br>
                                       <br>
-                                  </form>                                  
+                                  </form>
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -96,33 +100,33 @@
 
 
                         <!--boton de comentarios y sugerencias-->
-                        
+
                         {{-- crear las consultas en el controlador [Ordenes,menu] --}}
-                        
+
                             @if(count($ordenes) === 0)
                                 <h4>No existen Ordenes Activas</h4>
-                                
+
                             @else
-                            
+
                             <h4>Ordenes Pendientes</h4>
                             <ul>
-                                
+
                                 @foreach($ordenes as $orden)
-                                
-                                
+
+
                                     @if($orden->entregado === 'no')
                                     @php
                                     $bloackForm = false;
                                     @endphp
-                                    <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-danger" href="#" role="button" onclick="event.preventDefault(); document.getElementById('deleteOrden{{ $orden->id }}').submit();">Eliminar orden</a> 
+                                    <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-danger" href="#" role="button" onclick="event.preventDefault(); document.getElementById('deleteOrden{{ $orden->id }}').submit();">Eliminar orden</a>
                                         <button class="btn btn-success btn-xs" data-toggle="modal" data-target="#t{{ $orden->id }}">Ver Ticker</button></li>
                                         <form id="deleteOrden{{$orden->id}}" action="ordenes/{{$orden->id}}" method="POST" style="display: none;">
                                             {{ csrf_field() }} {{ method_field('DELETE') }}
                                         </form>
                                     @endif
-                                    
+
                                     <!--Modals-->
-                                    
+
                                     <div class="modal fade" id="t{{ $orden->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                                         <div class="modal-dialog" role="document">
                                           <div class="modal-content">
@@ -132,25 +136,25 @@
                                             </div>
                                             <div class="modal-body">
                                                 @php
-                                                
+
                                                     $decode = json_decode($orden->codigo, true);
                                                     foreach($decode as $code){
-                                                    
+
                                                         foreach($planes as $plan){
-                                                        
+
                                                             if($code['principal'] == $plan[0]->id){ echo"<h3> Principal: ".$plan[0]->nombre."</h3>";}
                                                             if($code['contorno1'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
                                                             if($code['contorno2'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
                                                             //if($code['contorno3'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
                                                             //if($code['contorno4'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
 
-                                                            
+
                                                         }
- 
+
                                                     }
-                                                
+
                                                 @endphp
-                                                
+
                                             </div>
                                             <div class="modal-footer">
                                               <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -158,22 +162,22 @@
                                           </div>
                                         </div>
                                       </div>
-                                    
-                                    
+
+
                                     <!--Modals-->
-                                    
+
                                 @endforeach
 
                             </ul>
-                            
+
                             <hr>
-                            
+
                             <h4>Ordenes Entregadas</h4>
                             <ul>
-                                
+
                                 @foreach($ordenes as $orden)
-                                
-                                
+
+
                                     @if($orden->entregado === 'si')
                                     @php
                                         $menuServidos[] = $orden->idMenu;
@@ -183,42 +187,42 @@
                                             {{ csrf_field() }} {{ method_field('DELETE') }}
                                         </form>
                                     @endif
-                                    
+
                                 @endforeach
 
                             </ul>
 
-                                
+
                             @endif
-                            
+
                         @endif
-                        
-                        
-                        
-                        
+
+
+
+
                         @if(count($menus) === 0)
                             <h4>No existen Menus Creados</h4>
                         @else
-                        
-                           
+
+
                         <!--Avisos-->
-                        
+
                          @if($menus[0]->id === 0)
                                 <p class="bg-danger">El menu activo se encuentra ordenado.</p>
                             @else
-                        
+
                         <hr>
-                        
+
                         @if($cliente->activo == 'si')
                         <p class="bg-success">Escoje el menu de tu prederencia</p>
                         @else
-                        
+
                         <p class="bg-danger">Te encuentras inactivo. Contacta al representante de tu empresa.</p>
                         @endif
                         <!--Avisos-->
-                        
+
                             <!--Form Pedido-->
-                        
+
                                 <form class="form-inline" action="ordenes" method="POST">
                                     <fieldset {{ $bloackForm === true ? '' : 'disabled' }} >
                                     {{ csrf_field() }}
@@ -247,12 +251,12 @@
                                                                       <label for="principal">Seleccionar:</label>
                                                                       <input type="radio" name="principal" value="{{$plan[0]->id}}">
                                                                   </div>
-                                                                      <button type="button" 
-                                                                              class="btn btn-xs btn-success" 
-                                                                              data-html="true" 
+                                                                      <button type="button"
+                                                                              class="btn btn-xs btn-success"
+                                                                              data-html="true"
                                                                               data-placement="top"
-                                                                              data-toggle="popover" 
-                                                                              title="{{$plan[0]->nombre}}" 
+                                                                              data-toggle="popover"
+                                                                              title="{{$plan[0]->nombre}}"
                                                                               data-content="
                                                                                 @php
                                                                                     $receta = json_decode($plan[0]->receta, true);
@@ -265,7 +269,7 @@
                                                                                     @endforeach
                                                                               ">Info. Nutricional</button>
                                                               </div>
-                                                      </div>  
+                                                      </div>
                                                   </div>
                                             @endif
                                         @endif
@@ -311,7 +315,7 @@
                                     var max_fields      = 2; //max input permitidos
                                     var wrapper         = $(".input_fields_wrap"); //clase wrapper para input's
                                     var add_button      = $("#add_field"); //Select ID
-                                
+
                                     var x = 0; //init cd input disponibles
                                     $(add_button).change(function(e){ //On.Change value disparo nuevo input
                                     var val_input		= $("#add_field").val();
@@ -327,7 +331,7 @@
                                             }
                                         }
                                     });
-                                
+
                                     $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
                                         e.preventDefault(); $(this).parent('div').remove(); x--;
                                     });
@@ -336,7 +340,7 @@
                                         // Allow: backspace, delete, tab, escape, enter and .
                                         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
                                             // Allow: Ctrl+A, Command+A
-                                            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) || 
+                                            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
                                             // Allow: home, end, left, right, down, up
                                             (e.keyCode >= 35 && e.keyCode <= 40)) {
                                                 // let it happen, don't do anything
@@ -349,7 +353,7 @@
                                     });
 
                                 });
-                                    
+
                                 </script>
                                 <!--jquery-->
                                 </div>
@@ -357,11 +361,11 @@
                                  <button type="submit" class="btn btn-primary">Crear Orden</button>
                                  </fieldset>
                                 </form>
-                        
-                        
+
+
                         <!--Form Pedido-->
-                        
-                        
+
+
                         @endif
                         <hr>
                     @endif
