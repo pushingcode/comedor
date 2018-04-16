@@ -92,22 +92,21 @@ class PlanController extends Controller
         $user_id    = \Auth::id();
         $codigo     = "PLAN-" . time();
         $timer      = Carbon\Carbon::now()->format('Y-m-d H:i:s');
+        $timerF      = Carbon\Carbon::tomorrow('America/Caracas');
         /*
         * Nueva funcionalidad fecha de publicacion de menu
         * si no se envia una fecha, por defecto el sistema creara la fecha proxima siguiente tomorrow
         * $timerF      = Carbon\Carbon::tomorrow('America/Caracas');
         */
-        if(empty($inputTime)){
-            $timerF      = Carbon\Carbon::tomorrow('America/Caracas');
-        } else {
+        if(!empty($request->publicar)){
+                    
             //validamos que sea una fecha valida y que no sea pasada
+            $inputData      = explode("-",  $request->publicar);
+            $inputDate      = Carbon\Carbon::create($inputData[2], $inputData[1], $inputData[0], 23, 59, 59);
 
                 $pattern="/^((19|20)?[0-9]{2})[\/|-](0?[1-9]|[1][012])[\/|-](0?[1-9]|[12][0-9]|3[01])$/";
 
-                if(preg_match($pattern, $request->publicar)){
-                    //validar si la fecha es pasada
-                    $inputData      = explode("-",  $inputTime);
-                    $inputDate      = Carbon\Carbon::create($inputData[2], $inputData[1], $inputData[0], 23, 59, 59);
+                if(preg_match($pattern, $inputDate->toDateString())){
 
                     //verificando si $inputDate es mayor o igual al dia de manana
                     $validDate      = $inputDate->gte($timerF); //true / false
@@ -117,14 +116,15 @@ class PlanController extends Controller
                         return \Redirect::back()->withErrors('La fecha programada es pasada o esta en un rango inferior a 24 horas');
 
                     } else {
-                         $timerF     = $inputDate;
+
+                         $timerF     = $inputDate->toDateString();
+
                     }
 
 
                 } else {
 
-                    //return \Redirect::back()->withErrors('El recurso enviado no es una fecha valida');
-                    $timerF = null;
+                    return \Redirect::back()->withErrors('El recurso fecha publicar, no es una fecha valida');
 
                 }
         }
