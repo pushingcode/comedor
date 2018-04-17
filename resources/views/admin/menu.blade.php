@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <div class="row"> 
+    <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
                 <div class="panel-heading"><h2>{{ $mensaje }}</h2> <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span></div>
@@ -24,23 +24,27 @@
                                     <td>{{$menu->publicar}}</td>
                                     <td>
                                         @if($menu->activo === 'no')
-                                        
+
                                         <button class="btn btn-danger btn-xs">{{$menu->activo}}</button>
-                                        
+
                                         @else
-                                        
+
                                         <button class="btn btn-success btn-xs">{{$menu->activo}}</button>
-                                        
+
                                         @endif
                                     </td>
                                     <td>{{$menu->nombre}}</td>
                                     <td>
                                         @php
                                         $apagar = false;
+                                        $menuId = "/entrega/menu/".$menu->id;
                                             foreach($ordenesP AS $key => $value){
                                                 if($key == $menu->id){
                                                     echo count($value);
-                                                    if(count($value) == 0){ $apagar = true; }
+                                                    if(count($value) == 0){
+                                                      $apagar = true;
+                                                      $menuId = '';
+                                                    }
                                                 }
                                             }
                                         @endphp
@@ -55,9 +59,9 @@
                                         @endphp
                                     </td>
                                     <td>
-                                        <a @if($apagar) disabled @endif class="btn btn-info btn-xs" href="/entrega/menu/{{ $menu->id }}" role="button"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
-                                        <a @if($menu->activo === 'no') disabled @endif class="btn btn-danger btn-xs" 
-                                           href="" role="button" 
+                                        <a @if($apagar) disabled @endif class="btn btn-info btn-xs" href="{{ $menuId }}" role="button"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+                                        <a @if($menu->activo === 'no') disabled @endif class="btn btn-danger btn-xs"
+                                           href="" role="button"
                                            onclick="event.preventDefault();
                                             document.getElementById('Update-{{ $menu->id }}').submit();">Cerrar</a>
                                         @if($menu->activo === 'no')
@@ -70,8 +74,8 @@
                                     </td>
                                 </tr>
                                 @endforeach
-                                
-                            
+
+
                             </table>
                         </div>
 			</div>
