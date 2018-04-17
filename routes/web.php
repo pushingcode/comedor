@@ -33,6 +33,7 @@ Route::post('mensual/cargar/reporte/{id}','OrdenesController@mreporte');
 Route::post('rporpedido','OrdenesController@promreporte');
 Route::post('comentarios', 'ClientesController@comentario');
 Route::get('events', 'EventController@index');
+Route::get('stock','InventarioController@stock');
 
 //testCases
 Route::get('reporte', 'PlanController@planreporte');

@@ -137,7 +137,7 @@
                         @endrole
                         @role('superadmin|jefe de cocina')
 
-                            <button type="button" class="btn btn-success">Inventario</button>
+                            <a href="stock" class="btn btn-success">Inventario</a>
 
                             <a href="events" class="btn btn-default"><i class="fa fa-calendar" aria-hidden="true"></i></a>
 
@@ -250,7 +250,7 @@
                               <ul class="dropdown-menu">
                                 <li><a href="/semanal/empresas">Pedidos x Empresas</a></li>
                                 <li><a data-toggle="modal" data-target="#RepMes" href="#">Pedidos Mensuales</a></li>
-<!--                                <li><a href="#"></a></li>-->
+                                <li><a href="stock">Reporte de Stock</a></li>
 <!--                                <li role="separator" class="divider"></li>
                                 <li><a href="#">Separated link</a></li>-->
                               </ul>

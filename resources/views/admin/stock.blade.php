@@ -12,27 +12,19 @@
                     <!--tabla-->
                     <table class="table table-condensed">
                         <tr>
-                            <th>Empresa</th>
-                            <th>RIF</th>
-                            <th>Telefono</th>
-                            <th>Cant. Empleados</th>
-                            <th>Estado Activo</th>
-                            <th></th>
+                            <th>Producto</th>
+                            <th>Existencia</th>
                         </tr>
-                        @foreach($empresas as $empresa)
+                        @foreach($stocks as $stock)
                         <tr>
-                            <td>{{ $empresa->nombre }}</td>
-                            <td>{{ $empresa->rif }}</td>
-                            <td>{{ $empresa->telefono }}</td>
-                            <td>{{ $empresa->empleados }}</td>
-                            <td>{{ $empresa->activo }}</td>
-                            <td><a href="/empresa/{{ $empresa->id }}/edit">Editar</a></td>
+                            <td>{{ $stock->producto }}</td>
+                            <td>{{ ceil($stock->cantidad/1000) }} Kg</td>
                         </tr>
                          @endforeach
                     </table>
                     <!--tabla-->
                     <!--Panel-->
-                    {{$empresas->links()}}
+                    {{$stocks->links()}}
                 </div>
                 
             </div>
