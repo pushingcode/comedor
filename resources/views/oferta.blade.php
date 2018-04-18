@@ -180,12 +180,13 @@
 
                                     @if($orden->entregado === 'si')
                                     @php
-                                        $menuServidos[] = $orden->idMenu;
+
+                                    if($menus[0]->id == $orden->idMenu) {
+                                    $bloackForm = false;
+                                    }
+                                    
                                     @endphp
-                                    <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-success" href="#" role="button" onclick="event.preventDefault(); document.getElementById('deleteOrden{{ $orden->id }}').submit();">Orden Entregada</a></li>
-                                        <form id="deleteOrden{{$orden->id}}" action="ordenes/{{$orden->id}}" method="POST" style="display: none;">
-                                            {{ csrf_field() }} {{ method_field('DELETE') }}
-                                        </form>
+                                    <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-success" href="#" role="button">Orden Entregada</a></li>
                                     @endif
 
                                 @endforeach
@@ -209,7 +210,8 @@
 
                          @if($menus[0]->id === 0)
                                 <p class="bg-danger">El menu activo se encuentra ordenado.</p>
-                            @else
+                                
+                         @else
 
                         <hr>
 
@@ -244,13 +246,29 @@
                                                       <div class="panel panel-info">
 
                                                           <div class="panel-heading">
-                                                                <h3 class="panel-title">{{$plan[0]->nombre}}</h3>
+                                                                <h3 class="panel-title">{{ $plan[0]->nombre }}</h3>
                                                           </div>
                                                               <div class="panel-body">
+                                                              @php
+                                                                $formControl = true;
+                                                              foreach($payLoadP as $key => $value){
+                                                                if($plan[0]->nombre == $key){
+
+                                                                  if($value == $plan[0]->salidaProduccion){
+                                                                    echo"<div class='alert alert-danger' role='alert'>AGOTADO</div>";
+                                                                    $formControl = false;
+                                                                  }
+
+                                                                }
+                                                              }
+
+                                                              @endphp
+                                                              @if($formControl == true)
                                                                   <div class="form-group">
                                                                       <label for="principal">Seleccionar:</label>
                                                                       <input type="radio" name="principal" value="{{$plan[0]->id}}">
                                                                   </div>
+                                                              @endif
                                                                       <button type="button"
                                                                               class="btn btn-xs btn-success"
                                                                               data-html="true"

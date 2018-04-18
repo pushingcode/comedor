@@ -22,12 +22,14 @@ class OrdenesController extends Controller
     public function index()
     {
         // compprobamos que es cliente y que tiene empresa asignada
+        $cantidad = 1;
         $id = \Auth::id();
         $cliente = \DB::table('clientes')
                 ->where('user_id', $id)
                 ->get();
         $ordenes = [];
         $planes = [];
+        $mode = \Config::get('app.mode');
         $fromDate = date('Y-m-d' . ' 00:00:00', time());
         $toDate = date('Y-m-d' . ' 23:59:59', time());
         if(count($cliente) == 0) {
@@ -39,18 +41,32 @@ class OrdenesController extends Controller
             $empresa = \DB::table('empresa')
                     ->where('id',$cliente[0]->empresa_id)
                     ->get();
+ 
+            if( $mode == "test" ){
+                $menu = \DB::table('menus')
+                ->join('planes','menus.codigo','=','planes.codigo')
+                ->select(
+                        'menus.*',
+                        'planes.produccion_id AS idPlanes',
+                        'planes.codigo AS codigoPlanes',
+                        'planes.servicio AS servicioPlan')
+                ->where('menus.activo','=','si')
+                ->whereBetween('menus.created_at', [$fromDate, $toDate])
+                ->get();
+            } else {
+                $menu = \DB::table('menus')
+                ->join('planes','menus.codigo','=','planes.codigo')
+                ->select(
+                        'menus.*',
+                        'planes.produccion_id AS idPlanes',
+                        'planes.codigo AS codigoPlanes',
+                        'planes.servicio AS servicioPlan')
+                ->where('menus.activo','=','si')
+                ->whereBetween('menus.publicar', [$fromDate, $toDate])
+                ->get();
+            }
 
-            $menu = \DB::table('menus')
-                    ->join('planes','menus.codigo','=','planes.codigo')
-                    ->select(
-                            'menus.*',
-                            'planes.produccion_id AS idPlanes',
-                            'planes.codigo AS codigoPlanes',
-                            'planes.servicio AS servicioPlan')
-                    ->where('menus.activo','=','si')
-                    //->whereBetween('menus.publicar', [$fromDate, $toDate])
-                    ->whereBetween('menus.created_at', [$fromDate, $toDate])
-                    ->get();
+            
             //cargando datos para envios a la vista
             //dd($menu);
             foreach ($menu as $menuConsulta){
@@ -77,14 +93,78 @@ class OrdenesController extends Controller
                             'menus.created_at AS fechaMenu')
                     ->where([['ordenes.user_id','=',$id],['deleted_at','=',null]])
                     ->get();
-        }
 
+             $menus = \DB::table('menus')
+                ->whereBetween('menus.publicar', [$fromDate, $toDate])
+                ->get();
+
+            $no_ofertas = \DB::table('ordenes')
+                        ->where('ordenes.menu_id','=',$menus[0]->id)
+                        ->get();
+
+
+            //contando los platos principales y contortnos
+            foreach($no_ofertas as $value){
+                $decode[] = json_decode($value->codigo, true);
+                foreach($decode as $receta){
+
+
+                    $cargaPlatoP = \DB::table('recetas')
+                            ->where('id',$receta[0]['principal'])
+                            ->get();
+
+                    $cargaPlatoC1 = \DB::table('recetas')
+                            ->where('id',$receta[0]['contorno1'])
+                            ->get();
+
+                    $cargaPlatoC2 = \DB::table('recetas')
+                            ->where('id',$receta[0]['contorno2'])
+                            ->get();
+
+                    $payLoadDescrTakeP[$value->id] = [$cargaPlatoP[0]->nombre => $cantidad];
+                    $payLoadDescrTakeC1[$value->id] = [$cargaPlatoC1[0]->nombre => $cantidad];
+                    $payLoadDescrTakeC2[$value->id] = [$cargaPlatoC2[0]->nombre => $cantidad];
+                }
+            }
+}
+
+            $sumArrayP = array();
+            foreach ($payLoadDescrTakeP as $key => $value) {
+              foreach ($value as $plato => $cantidad) {
+                if( ! array_key_exists($plato, $sumArrayP)) $sumArrayP[$plato] = 0;
+
+                $sumArrayP[$plato]+=$cantidad;
+              }
+            }
+
+            $sumArrayC1 = array();
+            foreach ($payLoadDescrTakeC1 as $key => $value) {
+              foreach ($value as $plato => $cantidad) {
+                if( ! array_key_exists($plato, $sumArrayC1)) $sumArrayC1[$plato] = 0;
+
+                $sumArrayC1[$plato]+=$cantidad;
+              }
+            }
+
+            $sumArrayC2 = array();
+            foreach ($payLoadDescrTakeC2 as $key => $value) {
+              foreach ($value as $plato => $cantidad) {
+                if( ! array_key_exists($plato, $sumArrayC2)) $sumArrayC2[$plato] = 0;
+
+                $sumArrayC2[$plato]+=$cantidad;
+              }
+            }
+
+        
         return  view('oferta',[
             'clientes'  => $cliente,
             'empresas'  => $empresa,
             'menus'     => $menu,
             'ordenes'   => $ordenes,
-            'planes'    => $planes
+            'planes'    => $planes,
+            'payLoadP'  => $sumArrayP,
+            'payLoadC1' => $sumArrayC1,
+            'payLoadC2' => $sumArrayC2,
             ]);
     }
 

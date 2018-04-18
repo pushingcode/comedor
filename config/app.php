@@ -28,6 +28,8 @@ return [
 
     'env' => env('APP_ENV', 'local'),
 
+    'mode'=> env('MODE_SERVICE', 'test'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

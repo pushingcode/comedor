@@ -16,7 +16,8 @@
 
                     <p>Bienvenido {{ Auth::user()->name }}
                         @role('superadmin')
-                                esta conectado como: <a href="#">Administrador del sistema</a>
+                                esta conectado como: <a href="#">Administrador del sistema</a> 
+                                <p>Modo del sistema: {{ \Config::get('app.mode') }}</p>
                         @endrole
                     </p>
 
