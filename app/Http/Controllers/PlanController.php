@@ -9,7 +9,7 @@ use Carbon;
 
 class PlanController extends Controller
 {
-    
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -38,7 +38,7 @@ class PlanController extends Controller
     public function create()
     {
         //
-        /*paso 1 
+        /*paso 1
         * verificar si existen pproductos terminados para se agregados a un nuevo plan
         * Si no existen productos con cantidad_e >= 1 enviar a plan.index con alerta de productos no disponibles
         * Si existen productos con >= 1 en cantidad_e, se envia a la vista de creacion de plan con la coleccion de productos a agregar + join de recetas + join de users
@@ -49,7 +49,7 @@ class PlanController extends Controller
                         ->get();
         //dd($productosOk);
         if (count($productosOk) == 0) {
-            
+
             return \Redirect::back()->withErrors('No existe produccion');
 
         } else {
@@ -91,15 +91,16 @@ class PlanController extends Controller
         //datos de prueba
         $user_id    = \Auth::id();
         $codigo     = "PLAN-" . time();
+        $mode       = \Config::get('app.mode');
         $timer      = Carbon\Carbon::now()->format('Y-m-d H:i:s');
-        $timerF      = Carbon\Carbon::tomorrow('America/Caracas');
+        $timerF     = Carbon\Carbon::tomorrow('America/Caracas');
         /*
         * Nueva funcionalidad fecha de publicacion de menu
         * si no se envia una fecha, por defecto el sistema creara la fecha proxima siguiente tomorrow
         * $timerF      = Carbon\Carbon::tomorrow('America/Caracas');
         */
         if(!empty($request->publicar)){
-                    
+
             //validamos que sea una fecha valida y que no sea pasada
             $inputData      = explode("-",  $request->publicar);
             $inputDate      = Carbon\Carbon::create($inputData[2], $inputData[1], $inputData[0], 23, 59, 59);
@@ -109,7 +110,11 @@ class PlanController extends Controller
                 if(preg_match($pattern, $inputDate->toDateString())){
 
                     //verificando si $inputDate es mayor o igual al dia de manana
-                    $validDate      = $inputDate->gte($timerF); //true / false
+                    if($mode == 'test') {
+                      $validDate = true;
+                    } else {
+                      $validDate = $inputDate->gte($timerF); //true / false
+                    }
 
                     if($validDate == false){
 
@@ -131,8 +136,8 @@ class PlanController extends Controller
 
 
         if ($request->clase == "sencillo") {
-            
-            /* 
+
+            /*
             ** convencion de operacion
             ** sumamos las cantidade de servicios y restamos las existentes en produccion
             ** verificando si existen planes con produccion del mismo ID
@@ -145,13 +150,13 @@ class PlanController extends Controller
                                     ->get();
 
             //validamos que la cantidad recibida sea menor o igual a la cantidad existente
-            
+
             if ($request->cantidad > $consultaProducto[0]->cantidad_e) {
 
                 return \Redirect::back()->withErrors('Las cantidades enviadas son superiores a las procesables');
 
             }
-            
+
 
             //agregamos la cantidad de produccion asignada
 
@@ -186,9 +191,9 @@ class PlanController extends Controller
                 return back();
 
 
-            } 
+            }
 
-            //insertamos nuevo plan y preparamos el siguiente menu 
+            //insertamos nuevo plan y preparamos el siguiente menu
             $nuevoPlan = \DB::table('planes')
                             ->insertGetId([
                                     'produccion_id' => $request->id,
@@ -199,7 +204,7 @@ class PlanController extends Controller
                                     'created_at'    => $timer,
                                     'updated_at'    => $timer,
                                 ]);
-            //creamos nuevo menu por defecto en estado 'no activo' 
+            //creamos nuevo menu por defecto en estado 'no activo'
             //para se actualizado con un nombre apropiado
             $nuevoPl[] = [$nuevoPlan => $produccionAsignada];
             $nuevoMenu = \DB::table('menus')
@@ -214,25 +219,25 @@ class PlanController extends Controller
                                     'created_at'    => $timer,
                                     'updated_at'    => $timer,
                                 ]);
-            
+
             return \Redirect::back()->withErrors('Nueva Planificacion Creada disponible para Menu');
 
         } else {
-             
+
             /**
              * mas de un producto seran actualizado y/o incertados en la BD
              * paso1
              * verificar si ya existen productos planificados con caracteristicas similares a las enviadas
-             * si existen se actualizan las cantidades y se les asigna el nombre al menu 
+             * si existen se actualizan las cantidades y se les asigna el nombre al menu
              **/
 
             $claves = preg_split("/[\s,]+/", $request->produccion);
-            
+
             foreach ($claves as $key => $value) {
                 if (!empty($value)) {
                     $id[] = $value;
                 }
-                
+
             }
 
             //consulta para verificar si existen planes con las mismas caracteriticas en estado activo
@@ -242,7 +247,7 @@ class PlanController extends Controller
                             ->get();
 
             if (count($planVer) == 0) {
-                //corremos un bucle para crear el/los plan(es) 
+                //corremos un bucle para crear el/los plan(es)
                 foreach ($id as $key => $value) {
 
                     $consultaProducto = \DB::table('produccion')
@@ -263,7 +268,7 @@ class PlanController extends Controller
                                                 'updated_at' => $timer,
                                                 ]);
 
-                    //insertamos nuevo plan y preparamos el siguiente menu 
+                    //insertamos nuevo plan y preparamos el siguiente menu
                     $nuevoPlan = \DB::table('planes')
                                     ->insertGetId([
                                             'produccion_id' => $value,
@@ -274,10 +279,10 @@ class PlanController extends Controller
                                             'created_at'    => $timer,
                                             'updated_at'    => $timer,
                                         ]);
-                    
-                    $nuevoPl[] = [$nuevoPlan => $produccionAsignada]; 
 
-                    
+                    $nuevoPl[] = [$nuevoPlan => $produccionAsignada];
+
+
 
                 }
                 //creamos nuevo menu por defecto en estado 'activo'
@@ -305,8 +310,8 @@ class PlanController extends Controller
                     }
 
                 }
-                
-                //corremos un bucle para crear el/los plan(es) 
+
+                //corremos un bucle para crear el/los plan(es)
                 foreach ($id as $key => $value) {
 
                     $consultaProducto = \DB::table('produccion')
@@ -327,7 +332,7 @@ class PlanController extends Controller
                                                 'updated_at' => $timer,
                                                 ]);
 
-                    //insertamos nuevo plan y preparamos el siguiente menu 
+                    //insertamos nuevo plan y preparamos el siguiente menu
                     $nuevoPlan = \DB::table('planes')
                                     ->insertGetId([
                                             'produccion_id' => $value,
@@ -338,10 +343,10 @@ class PlanController extends Controller
                                             'created_at'    => $timer,
                                             'updated_at'    => $timer,
                                         ]);
-                    
-                    $nuevoPl[] = [$nuevoPlan => $produccionAsignada]; 
 
-                    
+                    $nuevoPl[] = [$nuevoPlan => $produccionAsignada];
+
+
 
                 }
                 //creamos nuevo menu por defecto en estado 'activo'
@@ -357,13 +362,13 @@ class PlanController extends Controller
                                             'created_at'    => $timer,
                                             'updated_at'    => $timer,
                                         ]);
-                
+
                 return \Redirect::back()->withErrors('Nuevo '. $request->menu_name .' Menu Creado!!!');
                 //
             }
 
         }
-        
+
     }
 
     /**
@@ -410,13 +415,13 @@ class PlanController extends Controller
     {
         //
     }
-    
+
     /**
      * $id Id de plan para obtener rangos de fecha acordes con las planificaciones
      * ejecutadas
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     * TestCases 
+     * TestCases
      */
     public function planreporte() {
         //cargamos planes a partir de un rango de fecha viable de planes ejecutados
@@ -434,18 +439,18 @@ class PlanController extends Controller
             $start = [];
             $j=1;
             for ($i=1; $i <= $date->daysInMonth ; $i++) {
-                Carbon\Carbon::createFromDate($year,$month,$i); 
+                Carbon\Carbon::createFromDate($year,$month,$i);
                 $a = (array)Carbon\Carbon::createFromDate($year,$month,$i)->startOfWeek()->toDateString();
                 $b = (array)Carbon\Carbon::createFromDate($year,$month,$i)->endOfweek()->toDateString();
                 $start['Semana: '.$j]= array_merge($a,$b);
 
                 $i+=7;
-                $j++; 
+                $j++;
             }
         $salida[$mes] = $start;
         }
-        
+
         return $salida;
-        
+
     }
 }

@@ -179,13 +179,16 @@
 
 
                                     @if($orden->entregado === 'si')
-                                    @php
+                                      @php
+                                        if(count($menus) == 0){
 
-                                    if($menus[0]->id == $orden->idMenu) {
-                                    $bloackForm = false;
-                                    }
-                                    
-                                    @endphp
+                                        } else {
+                                          if($menus[0]->id == $orden->idMenu) {
+                                            $bloackForm = false;
+                                          }
+                                        }
+
+                                      @endphp
                                     <li>{{ $orden->nombreMenu }} <a class="btn btn-xs btn-success" href="#" role="button">Orden Entregada</a></li>
                                     @endif
 
@@ -210,7 +213,7 @@
 
                          @if($menus[0]->id === 0)
                                 <p class="bg-danger">El menu activo se encuentra ordenado.</p>
-                                
+
                          @else
 
                         <hr>
@@ -251,14 +254,19 @@
                                                               <div class="panel-body">
                                                               @php
                                                                 $formControl = true;
-                                                              foreach($payLoadP as $key => $value){
-                                                                if($plan[0]->nombre == $key){
-
-                                                                  if($value == $plan[0]->salidaProduccion){
-                                                                    echo"<div class='alert alert-danger' role='alert'>AGOTADO</div>";
-                                                                    $formControl = false;
+                                                              if(count($payLoadP)==0){
+                                                                echo"<p>Platos Disponibles: " .$plan[0]->salidaProduccion. "</p>";
+                                                              } else {
+                                                                foreach($payLoadP as $key => $value){
+                                                                  if($plan[0]->nombre == $key){
+                                                                    if($value == $plan[0]->salidaProduccion){
+                                                                      echo"<div class='alert alert-danger' role='alert'>AGOTADO</div>";
+                                                                      $formControl = false;
+                                                                    } else {
+                                                                      $result = ceil((int)$plan[0]->salidaProduccion - (int)$value);
+                                                                      echo"<p>Platos Disponibles: " . $result . "</p>";
+                                                                    }
                                                                   }
-
                                                                 }
                                                               }
 
