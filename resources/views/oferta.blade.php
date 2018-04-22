@@ -139,9 +139,8 @@
 
                                                     $decode = json_decode($orden->codigo, true);
                                                     foreach($decode as $code){
-
                                                         foreach($planes as $plan){
-
+print_r($code['principal']);
                                                             if($code['principal'] == $plan[0]->id){ echo"<h3> Principal: ".$plan[0]->nombre."</h3>";}
                                                             if($code['contorno1'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
                                                             if($code['contorno2'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}

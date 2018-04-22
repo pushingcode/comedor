@@ -25,8 +25,9 @@ class OrdenesController extends Controller
         $cantidad = 1;
         $id = \Auth::id();
         $cliente = \DB::table('clientes')
-                ->where('user_id', $id)
+                ->where([['clientes.user_id','=', $id],['clientes.activo','=','si']])
                 ->get();
+
         $ordenes = [];
         $planes = [];
         $mode = \Config::get('app.mode');
@@ -44,7 +45,7 @@ class OrdenesController extends Controller
         } else {
             //el susuario es cliente se carga info de empresa
             $empresa = \DB::table('empresa')
-                    ->where('id',$cliente[0]->empresa_id)
+                    ->where([['empresa.id','=',$cliente[0]->empresa_id],['empresa.activo','=','si']])
                     ->get();
 
             if( $mode == "test" ){
@@ -56,7 +57,7 @@ class OrdenesController extends Controller
                         'planes.codigo AS codigoPlanes',
                         'planes.servicio AS servicioPlan')
                 ->where('menus.activo','=','si')
-                ->whereBetween('menus.created_at', [$fromDate, $toDate])
+                //->whereBetween('menus.created_at', [$fromDate, $toDate])
                 ->get();
             } else {
                 $menu = \DB::table('menus')
@@ -87,7 +88,7 @@ class OrdenesController extends Controller
                         ->where('produccion.id','=',$menuConsulta->idPlanes)
                         ->get();
             }
-
+//dd($planes);
             $ordenes = \DB::table('ordenes')
                     ->join('menus','ordenes.menu_id','=','menus.id')
                     ->select(
