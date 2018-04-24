@@ -118,23 +118,7 @@
                                                               <input type="radio" name="principal" value="{{ $plato[1] }}">
                                                           </div>
                                                       @endif
-                                                              <button type="button"
-                                                                      class="btn btn-xs btn-success"
-                                                                      data-html="true"
-                                                                      data-placement="top"
-                                                                      data-toggle="popover"
-                                                                      title="{{ $plato[0] }}"
-                                                                      data-content="
-                                                                        @php
-                                                                            $receta = json_decode($value, true);
-                                                                        @endphp
-                                                                            @foreach($receta as $values)
-                                                                                @foreach($values as $value)
-                                                                                <strong>{{$value['nombre']}}</strong> Cantidad: {{$value['cantidad']}}gr.<br>
-                                                                                <small>Proteinas {{$value['proteinas']}}<br>Grasas: {{$value['grasas']}}<br>Carbohidratos: {{$value['carbohidratos']}}<br>Calorias: {{$value['calorias']}}<br></small>
-                                                                                @endforeach
-                                                                            @endforeach
-                                                                      ">Info. Nutricional</button>
+
                                                       </div>
                                               </div>
                                           </div>
@@ -150,7 +134,7 @@
                                 <select class="form-control" id="add_field">
                                 <option>Seleccione uno o mas Contornos</option>
                                     @foreach($payLoadcC as $key=>$value)
-                                            <option value="{{$value}}">{{$key}}</option>
+                                        <option value="{{$value}}">{{$key}}</option>
                                     @endforeach
                                 </select>
                                 <hr>

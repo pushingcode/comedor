@@ -31,8 +31,14 @@ class OrdenesController extends Controller
         $ordenes = [];
         $planes = [];
         $mode = \Config::get('app.mode');
-        $fromDate = date('Y-m-d' . ' 00:00:00', time());
-        $toDate = date('Y-m-d' . ' 23:59:59', time());
+
+        $tomorrow = Carbon\Carbon::tomorrow()->toDateTimeString();
+        //$fromDate = date('Y-m-d' . ' 00:00:00', time());
+        //$toDate = date('Y-m-d' . ' 23:59:59', time());
+
+        $rango = explode(" ", $tomorrow);
+        $fromDate = $tomorrow;
+        $toDate = $rango[0] . ' 23:59:59';
 
         $sumArrayP = array();
         $sumArrayC1 = array();
@@ -57,7 +63,7 @@ class OrdenesController extends Controller
                         'planes.codigo AS codigoPlanes',
                         'planes.servicio AS servicioPlan')
                 ->where('menus.activo','=','si')
-                //->whereBetween('menus.created_at', [$fromDate, $toDate])
+                ->whereBetween('menus.created_at', [$fromDate, $toDate])
                 ->get();
             } else {
                 $menu = \DB::table('menus')

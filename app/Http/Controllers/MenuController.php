@@ -203,24 +203,104 @@ class MenuController extends Controller
                     $payLoadDescrTakeC[$value->id] = [$cargaPlatoC[0]->nombre => $cantidad];
                 }
             }
+
         } else {
+            $decode = array();
             foreach($ordenes as $value){
                 $decode[] = json_decode($value->codigo, true);
-                dd($decode);
-                if ($value->recetaTipo == 'principal') {
-                    $cargaPlatoP = \DB::table('recetas')
-                            ->where('id',$value->id_r)
-                            ->get();
+                //dd($decode);
+                foreach ($decode as $value) {
+                    //dd($value);
+                    foreach ($value as $key1 => $value1) {
 
-                    $payLoadDescrTakeP[$value->id."-".$value->cantidad_s] = [$cargaPlatoP[0]->nombre => $cargaPlatoP[0]->receta];
+
+                        foreach($decode as $receta){
+
+                        
+                        //consultando planificacionesconc on producciones
+                        foreach ($receta as $clave => $valor) {
+
+                            if($clave == 'principal'){
+                                $priPro = \DB::table('produccion')
+                                        ->join('planes','planes.produccion_id','=','produccion.id')
+                                        ->select('produccion.id_r AS receta',
+                                                'produccion.cantidad_s AS Scantidad')
+                                        ->where('planes.id','=',$valor)
+                                        ->get();
+
+                                foreach ($priPro as $platoPrin) {
+                                    $cargaPlatoP = \DB::table('recetas')
+                                                ->where('id','=',$platoPrin->receta)
+                                                ->get();
+//dd($value);
+                                    $payLoadDescrTakeP[$value[0]['principal']."-".$platoPrin->Scantidad] = [$cargaPlatoP[0]->nombre => $cantidad];
+                                }
+                                
+                            }
+
+                            if($clave == 'contorno1'){
+                                $priC1 = \DB::table('produccion')
+                                        ->join('planes','planes.produccion_id','=','produccion.id')
+                                        ->select('produccion.id_r AS receta')
+                                        ->where('planes.id','=',$valor)
+                                        ->get();
+
+                                foreach ($priC1 as $platoC1) {
+                                    $cargaPlatoC1 = \DB::table('recetas')
+                                                ->where('id','=',$platoC1->receta)
+                                                ->get();
+
+                                    $payLoadDescrTakeC1[$value[0]['contorno1']] = [$cargaPlatoC1[0]->nombre => $cantidad];
+                                }
+                                
+                            }
+
+                            if($clave == 'contorno2'){
+                                $priC2 = \DB::table('produccion')
+                                        ->join('planes','planes.produccion_id','=','produccion.id')
+                                        ->select('produccion.id_r AS receta')
+                                        ->where('planes.id','=',$valor)
+                                        ->get();
+
+                                foreach ($priC2 as $platoC2) {
+                                    $cargaPlatoC2 = \DB::table('recetas')
+                                                ->where('id','=',$platoC2->receta)
+                                                ->get();
+
+                                    $payLoadDescrTakeC2[$value[0]['contorno2']] = [$cargaPlatoC2[0]->nombre => $cantidad];
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+
+
+                    /*----------------------------------------------------
+                        if ($key1 == 'principal') {
+                            $cargaPlatoP = \DB::table('recetas')
+                                    ->where('id',$value1)
+                                    ->get();
+
+                            $payLoadDescrTakeP[$value->id."-".$value->cantidad_s] = [$cargaPlatoP[0]->nombre => $cargaPlatoP[0]->receta];
+                        }
+                        
+                        if ($key1 == 'contorno1') {
+                            $cargaPlatoC = \DB::table('recetas')
+                                    ->where('id',$value1)
+                                    ->get();
+                            $payLoadDescrTakeC[$value->id] = [$cargaPlatoC[0]->nombre => $cantidad];
+                        }
+
+                    ----------------------------------------------------*/
+
+
+
+
+
+                    }
                 }
                 
-                if ($value->recetaTipo == 'contorno') {
-                    $cargaPlatoC = \DB::table('recetas')
-                            ->where('id',$value->id_r)
-                            ->get();
-                    $payLoadDescrTakeC[$value->id] = [$cargaPlatoC[0]->nombre => $cantidad];
-                }
             }
         }
 
@@ -241,7 +321,7 @@ class MenuController extends Controller
         }
 
 
-        foreach ($payLoadDescrTakeC as $key => $value) {
+        foreach ($payLoadDescrTakeC1 as $key => $value) {
             foreach ($value as $plato => $cantidad) {
                 if( ! array_key_exists($plato, $sumArrayC)) $sumArrayC[$plato] = 0;
 
@@ -265,10 +345,10 @@ class MenuController extends Controller
                 ->get();
 
         //modo super superusuario 
-       //$user = \Auth::user();
-        //if($user->hasRole('superadmin')) {
-            //dd($tipoP,$sumArrayP);
-        //}
+       $user = \Auth::user();
+        if($user->hasRole('superadmin')) {
+            return \Redirect::back()->withErrors('Esta version no cuenta con la funcionalidad menu avanzado');
+        }
 
         $cliente = \DB::table('clientes')
                 ->where([['clientes.user_id','=', $user->id],['clientes.activo','=','si']])
@@ -286,7 +366,7 @@ class MenuController extends Controller
             return \Redirect::back()->withErrors('La empresa no existe  o se encuentra inactiva');
         }
 
-
+dd($sumArrayC);
 
         return  view('menu',[
             'mensaje'   => $menu[0]->nombre,
