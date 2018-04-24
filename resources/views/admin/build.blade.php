@@ -12,7 +12,9 @@
 						@if (count($inventarios)===0)
 						<p>Alerta ninguno de los ingredientes esta disponible!!!!</p>
 						@endif
-
+						<script>
+							var sumas =[];
+						</script>
 						@foreach($recetas as $key => $values)
 
 						@php
@@ -39,19 +41,24 @@
 											echo "<p>Cantidades Aprox. en invetario: <span id='cantInv-".$values[$x][$clave]["id"]."'>" . $inventario->cantidad / 1000 . "Kg</span></p>";
 											//echo"<input name='INV-".$values[$x][$clave]["id"]."' type='hidden' value='" . $inventario->cantidad / 1000 . "'>";
 											echo "<p>Cantidades Aprox. despues de cargar el batch: <span class='cantidades' id='total-".$values[$x][$clave]["id"]."'></span></p>";
+											echo "<p>Cantidad de Producto:  <span id='producido-".$values[$x][$clave]["id"]."'></span></p>";
 
 										}
 										
 									}@endphp
 											<script>
 											$('input[name=batch]').keyup(function(){
-
+												var epsilon = 0.001;
 												var sum = parseInt($('input[name= @php echo $values[$x][$clave]["id"]; @endphp]').val(),10)*1000;
 												var cantidad = parseInt($('@php echo"#cantInv-" . $values[$x][$clave]["id"]; @endphp').text(),10);
 												sum *= parseInt($('input[name=batch]').val(),10)/1000000;
-												total = Math.ceil(cantidad - sum);
+												total = ((cantidad - sum)+epsilon).toFixed(2);
+												producido = (sum + epsilon).toFixed(2);
+												sumas.push(producido);
 												color = 'green';
+												color2 = 'green';
 												mensaje = '';
+												mensaje2 = 'Requerido aprox.';
 												if(total < 0){
 													color = 'red';
 													mensaje = 'No es posible cargar inventarios negativos';
@@ -60,6 +67,7 @@
 													mensaje = 'Alerta!! El inventario esta peligrosamente bajo';
 												}
 												$('@php echo"#total-".$values[$x][$clave]["id"]; @endphp').text(total + "Kg " + mensaje).css('color', color);
+												$('@php echo"#producido-".$values[$x][$clave]["id"]; @endphp').text(producido + "Kg " + mensaje2).css('color', color2);
 												console.log(sum);
 
 											})
@@ -74,7 +82,28 @@
 							@endphp
 
 						<hr>
-						@endforeach	
+						<p class="lead">Peso total de Produccion: <span id="TotalProduccion"></span></p>
+						@endforeach
+						<script>
+
+						$('input[name=batch]').keyup(function(){
+							//console.log(sumas.reduce(function(a,b){ return a + b; }));
+							$.sum = function(arr) {
+							    var r = 0;
+							    $.each(arr, function(i, v) {
+							        r += +v;
+							    });
+							    return r;
+							}
+							var sum = $.sum(sumas)
+
+							$('#TotalProduccion').text(sum + "Kg ");
+							console.log(sum);
+							sumas = [];
+						})
+							
+						</script>
+
 						<input type="submit" value="Enviar a Produccion">
 						</form>
 

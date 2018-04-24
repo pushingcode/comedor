@@ -140,17 +140,14 @@
                                                     $decode = json_decode($orden->codigo, true);
                                                     foreach($decode as $code){
                                                         foreach($planes as $plan){
-print_r($code['principal']);
-                                                            if($code['principal'] == $plan[0]->id){ echo"<h3> Principal: ".$plan[0]->nombre."</h3>";}
-                                                            if($code['contorno1'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
-                                                            if($code['contorno2'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
-                                                            //if($code['contorno3'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
-                                                            //if($code['contorno4'] == $plan[0]->id){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+                                                            if($code['principal'] == $plan[0]->idProduccion){ echo"<h3> Principal: ".$plan[0]->nombre."</h3>";}
+                                                            if($code['contorno1'] == $plan[0]->idProduccion){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+                                                            if($code['contorno2'] == $plan[0]->idProduccion){ echo"<h3> Contorno: ".$plan[0]->nombre."</h3>";}
+
+                                                            }
 
 
                                                         }
-
-                                                    }
 
                                                 @endphp
 
@@ -257,7 +254,9 @@ print_r($code['principal']);
                                                                 echo"<p>Platos Disponibles: " .$plan[0]->salidaProduccion. "</p>";
                                                               } else {
                                                                 foreach($payLoadP as $key => $value){
+
                                                                   if($plan[0]->nombre == $key){
+
                                                                     if($value == $plan[0]->salidaProduccion){
                                                                       echo"<div class='alert alert-danger' role='alert'>AGOTADO</div>";
                                                                       $formControl = false;
@@ -265,8 +264,12 @@ print_r($code['principal']);
                                                                       $result = ceil((int)$plan[0]->salidaProduccion - (int)$value);
                                                                       echo"<p>Platos Disponibles: " . $result . "</p>";
                                                                     }
+                                                                  } else {
+                                                                  echo"<p>Platos Disponibles: " .$plan[0]->salidaProduccion. "</p>";
                                                                   }
+
                                                                 }
+
                                                               }
 
                                                               @endphp

@@ -105,10 +105,15 @@ class OrdenesController extends Controller
                 ->get();
 
             if(count($menus) == 0){
+                $no_ofertas = \DB::table('ordenes')
+                        ->where('ordenes.entregado','=','no')
+                        ->get();
             } else {
                 $no_ofertas = \DB::table('ordenes')
                         ->where('ordenes.menu_id','=',$menus[0]->id)
                         ->get();
+            }
+
               if(count($no_ofertas) == 0) {
 
               } else {
@@ -117,22 +122,61 @@ class OrdenesController extends Controller
                     $decode[] = json_decode($value->codigo, true);
                     foreach($decode as $receta){
 
+                        
+                        //consultando planificacionesconc on producciones
+                        foreach ($receta as $clave => $valor) {
+                            if($clave == 'principal'){
+                                $priPro = \DB::table('produccion')
+                                        ->join('planes','planes.produccion_id','=','produccion.id')
+                                        ->select('produccion.id_r AS receta')
+                                        ->where('planes.id','=',$valor)
+                                        ->get();
 
-                        $cargaPlatoP = \DB::table('recetas')
-                                ->where('id',$receta[0]['principal'])
-                                ->get();
+                                foreach ($priPro as $platoPrin) {
+                                    $cargaPlatoP = \DB::table('recetas')
+                                                ->where('id','=',$platoPrin->receta)
+                                                ->get();
 
-                        $cargaPlatoC1 = \DB::table('recetas')
-                                ->where('id',$receta[0]['contorno1'])
-                                ->get();
+                                    $payLoadDescrTakeP[$value->id] = [$cargaPlatoP[0]->nombre => $cantidad];
+                                }
+                                
+                            }
 
-                        $cargaPlatoC2 = \DB::table('recetas')
-                                ->where('id',$receta[0]['contorno2'])
-                                ->get();
+                            if($clave == 'contorno1'){
+                                $priC1 = \DB::table('produccion')
+                                        ->join('planes','planes.produccion_id','=','produccion.id')
+                                        ->select('produccion.id_r AS receta')
+                                        ->where('planes.id','=',$valor)
+                                        ->get();
 
-                        $payLoadDescrTakeP[$value->id] = [$cargaPlatoP[0]->nombre => $cantidad];
-                        $payLoadDescrTakeC1[$value->id] = [$cargaPlatoC1[0]->nombre => $cantidad];
-                        $payLoadDescrTakeC2[$value->id] = [$cargaPlatoC2[0]->nombre => $cantidad];
+                                foreach ($priC1 as $platoC1) {
+                                    $cargaPlatoC1 = \DB::table('recetas')
+                                                ->where('id','=',$platoC1->receta)
+                                                ->get();
+
+                                    $payLoadDescrTakeC1[$value->id] = [$cargaPlatoC1[0]->nombre => $cantidad];
+                                }
+                                
+                            }
+
+                            if($clave == 'contorno2'){
+                                $priC2 = \DB::table('produccion')
+                                        ->join('planes','planes.produccion_id','=','produccion.id')
+                                        ->select('produccion.id_r AS receta')
+                                        ->where('planes.id','=',$valor)
+                                        ->get();
+
+                                foreach ($priC2 as $platoC2) {
+                                    $cargaPlatoC2 = \DB::table('recetas')
+                                                ->where('id','=',$platoC2->receta)
+                                                ->get();
+
+                                    $payLoadDescrTakeC2[$value->id] = [$cargaPlatoC2[0]->nombre => $cantidad];
+                                }
+                                
+                            }
+                        }
+                        
                     }
                 }
 
@@ -165,8 +209,8 @@ class OrdenesController extends Controller
               }
 
             }
-        }
-
+        
+       // dd($sumArrayP);
         return  view('oferta',[
             'clientes'  => $cliente,
             'empresas'  => $empresa,
@@ -347,25 +391,73 @@ class OrdenesController extends Controller
                         'empresa.nombre AS empresasNombre',
                         'empresa.activo AS empresasActivo',
                         'ordenes.*')
-                ->where([['menu_id','=',$id],['entregado','=','no'],['ordenes.deleted_at','=',null]])
+                ->where([['ordenes.menu_id','=',$id],['ordenes.entregado','=','no'],['ordenes.deleted_at','=',null]])
                 ->get();
-
+//dd($orden);
         foreach($orden as $value){
             $decode[] = json_decode($value->codigo, true);
             foreach($decode as $receta){
-                $cargaPlatoP = \DB::table('recetas')
-                        ->where('id',$receta[0]['principal'])
-                        ->get();
-                $cargaPlatoC1 = \DB::table('recetas')
-                        ->where('id',$receta[0]['contorno1'])
-                        ->get();
-                $cargaPlatoC2 = \DB::table('recetas')
-                        ->where('id',$receta[0]['contorno2'])
-                        ->get();
-                $payload[$value->id] = "Empresa: ".$value->empresasNombre."-Usuario: ".$value->userName."-Principal: ".$cargaPlatoP[0]->nombre."-Contorno: ".$cargaPlatoC1[0]->nombre."-Contorno: ".$cargaPlatoC2[0]->nombre;
+                //consultando planificacionesconc on producciones
+                foreach($receta as $clave => $valor) {
+
+                    if($clave == 'principal'){
+                        $priPro = \DB::table('produccion')
+                                ->join('planes','planes.produccion_id','=','produccion.id')
+                                ->select('produccion.id_r AS receta')
+                                ->where('planes.id','=',$valor)
+                                ->get();
+
+                        foreach ($priPro as $platoPrin) {
+                            $cargaPlatoP = \DB::table('recetas')
+                                        ->where('recetas.id','=',$platoPrin->receta)
+                                        ->get();
+
+                            //$payLoadDescrTakeP[$value->id] = [$cargaPlatoP[0]->nombre => $cantidad];
+                        }
+                        
+                    }
+
+                    if($clave == 'contorno1'){
+                        $priC1 = \DB::table('produccion')
+                                ->join('planes','planes.produccion_id','=','produccion.id')
+                                ->select('produccion.id_r AS receta')
+                                ->where('planes.id','=',$valor)
+                                ->get();
+
+                        foreach ($priC1 as $platoC1) {
+                            $cargaPlatoC1 = \DB::table('recetas')
+                                        ->where('recetas.id','=',$platoC1->receta)
+                                        ->get();
+
+                            //$payLoadDescrTakeC1[$value->id] = [$cargaPlatoC1[0]->nombre => $cantidad];
+                        }
+                        
+                    }
+
+                    if($clave == 'contorno2'){
+                        $priC2 = \DB::table('produccion')
+                                ->join('planes','planes.produccion_id','=','produccion.id')
+                                ->select('produccion.id_r AS receta')
+                                ->where('planes.id','=',$valor)
+                                ->get();
+
+                        foreach ($priC2 as $platoC2) {
+                            $cargaPlatoC2 = \DB::table('recetas')
+                                        ->where('recetas.id','=',$platoC2->receta)
+                                        ->get();
+
+                            //$payLoadDescrTakeC2[$value->id] = [$cargaPlatoC2[0]->nombre => $cantidad];
+                        }
+                        
+                    }
+                }
             }
 
         }
+
+
+$payload[$value->id] = "Empresa: ".$value->empresasNombre."-Usuario: ".$value->userName."-Principal: ".$cargaPlatoP[0]->nombre;
+
 
         return view('admin.despacho',['mensaje'=>'Gestion de Ordenes','ordenes' => $orden,'payloads' => $payload]);
     }

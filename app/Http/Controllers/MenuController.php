@@ -206,6 +206,7 @@ class MenuController extends Controller
         } else {
             foreach($ordenes as $value){
                 $decode[] = json_decode($value->codigo, true);
+                dd($decode);
                 if ($value->recetaTipo == 'principal') {
                     $cargaPlatoP = \DB::table('recetas')
                             ->where('id',$value->id_r)
@@ -264,10 +265,10 @@ class MenuController extends Controller
                 ->get();
 
         //modo super superusuario 
-        $user = \Auth::user();
-        if($user->hasRole('superadmin')) {
-            dd($tipoP,$sumArrayP);
-        }
+       //$user = \Auth::user();
+        //if($user->hasRole('superadmin')) {
+            //dd($tipoP,$sumArrayP);
+        //}
 
         $cliente = \DB::table('clientes')
                 ->where([['clientes.user_id','=', $user->id],['clientes.activo','=','si']])
